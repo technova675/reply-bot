@@ -1,0 +1,112 @@
+{
+  "placeholderImages": [
+    {
+      "id": "nypost-avatar",
+      "description": "New York Post avatar",
+      "imageUrl": "https://picsum.photos/seed/nypost-avatar/48/48",
+      "imageHint": "logo newspaper"
+    },
+    {
+      "id": "nyt1-media",
+      "description": "Media for NY Post tweet",
+      "imageUrl": "https://picsum.photos/seed/nyt1-media/600/400",
+      "imageHint": "politics news"
+    },
+    {
+      "id": "tom-avatar",
+      "description": "Tom's avatar",
+      "imageUrl": "https://picsum.photos/seed/tom-avatar/48/48",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "vir-avatar",
+      "description": "VIR's avatar",
+      "imageUrl": "https://picsum.photos/seed/vir-avatar/48/48",
+      "imageHint": "tech logo"
+    },
+    {
+      "id": "vir-1-media",
+      "description": "Media 1 for VIR's tweet",
+      "imageUrl": "https://picsum.photos/seed/vir-1-media/300/200",
+      "imageHint": "ui design"
+    },
+    {
+      "id": "vir-2-media",
+      "description": "Media 2 for VIR's tweet",
+      "imageUrl": "https://picsum.photos/seed/vir-2-media/300/200",
+      "imageHint": "code screen"
+    },
+    {
+      "id": "replyguy-avatar",
+      "description": "Reply Guy's avatar",
+      "imageUrl": "https://picsum.photos/seed/replyguy-avatar/48/48",
+      "imageHint": "abstract person"
+    },
+    {
+      "id": "mediatest-avatar",
+      "description": "Media Test's avatar",
+      "imageUrl": "https://picsum.photos/seed/mediatest-avatar/48/48",
+      "imageHint": "camera lens"
+    },
+    {
+      "id": "g1-media",
+      "description": "Grid image 1",
+      "imageUrl": "https://picsum.photos/seed/g1-media/300/300",
+      "imageHint": "nature landscape"
+    },
+    {
+      "id": "g2-media",
+      "description": "Grid image 2",
+      "imageUrl": "https://picsum.photos/seed/g2-media/300/300",
+      "imageHint": "city architecture"
+    },
+    {
+      "id": "g3-media",
+      "description": "Grid image 3",
+      "imageUrl": "https://picsum.photos/seed/g3-media/300/300",
+      "imageHint": "food delicious"
+    },
+    {
+      "id": "g4-media",
+      "description": "Grid image 4",
+      "imageUrl": "https://picsum.photos/seed/g4-media/300/300",
+      "imageHint": "animal cute"
+    },
+    {
+      "id": "imgonly-avatar",
+      "description": "Image Only's avatar",
+      "imageUrl": "https://picsum.photos/seed/imgonly-avatar/48/48",
+      "imageHint": "art abstract"
+    },
+    {
+      "id": "only1-media",
+      "description": "Single media image",
+      "imageUrl": "https://picsum.photos/seed/only1-media/600/300",
+      "imageHint": "technology futuristic"
+    },
+    {
+      "id": "user-avatar",
+      "description": "Main user's avatar",
+      "imageUrl": "https://picsum.photos/seed/user-avatar/40/40",
+      "imageHint": "person developer"
+    },
+    {
+      "id": "vercel-avatar",
+      "description": "Vercel's avatar",
+      "imageUrl": "https://picsum.photos/seed/vercel-avatar/40/40",
+      "imageHint": "logo tech"
+    },
+    {
+      "id": "tailwind-avatar",
+      "description": "Tailwind CSS's avatar",
+      "imageUrl": "https://picsum.photos/seed/tailwind-avatar/40/40",
+      "imageHint": "logo design"
+    },
+    {
+      "id": "nextjs-avatar",
+      "description": "Next.js's avatar",
+      "imageUrl": "https://picsum.photos/seed/nextjs-avatar/40/40",
+      "imageHint": "logo code"
+    }
+  ]
+}

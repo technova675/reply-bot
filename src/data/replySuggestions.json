@@ -1,0 +1,23 @@
+{
+    "t1": [
+      { "id": "s1", "text": "This is a concise professional reply suggestion. It wraps neatly and supports longer responses without breaking layout. This part is extra long to demonstrate the 'Show more' functionality.", "source": "static", "createdAt": "2024-09-19T12:00:00Z" },
+      { "id": "s2", "text": "Thanks for sharing—I'll take a look and circle back with concrete next steps by EOD.", "source": "static", "createdAt": "2024-09-19T12:01:00Z" },
+      { "id": "s3", "text": "Appreciate the update — that's helpful context. I'll sync with the team and report back.", "source": "static", "createdAt": "2024-09-19T12:02:00Z" },
+      { "id": "s4", "text": "Interesting perspective. I hadn't considered that angle before.", "source": "static", "createdAt": "2024-09-19T12:03:00Z" },
+      { "id": "s5", "text": "Could you elaborate on the second point? I'd like to understand more.", "source": "static", "createdAt": "2024-09-19T12:04:00Z" }
+    ],
+    "t2": [
+        { "id": "s6", "text": "We hear you. Transparency and improvement are key.", "source": "static", "createdAt": "2024-09-19T13:00:00Z" },
+        { "id": "s7", "text": "Looking forward to seeing the improvements in action.", "source": "static", "createdAt": "2024-09-19T13:01:00Z" },
+        { "id": "s8", "text": "The community appreciates the honesty. Let's build.", "source": "static", "createdAt": "2024-09-19T13:02:00Z" },
+        { "id": "s9", "text": "What are the top 3 lessons learned?", "source": "static", "createdAt": "2024-09-19T13:03:00Z" },
+        { "id": "s10", "text": "Every project has its ups and downs. The comeback is what matters.", "source": "static", "createdAt": "2024-09-19T13:04:00Z" }
+    ],
+    "default": [
+        { "id": "d1", "text": "Great point!", "source": "static", "createdAt": "2024-09-19T14:00:00Z" },
+        { "id": "d2", "text": "Thanks for sharing this.", "source": "static", "createdAt": "2024-09-19T14:01:00Z" },
+        { "id": "d3", "text": "I agree completely.", "source": "static", "createdAt": "2024-09-19T14:02:00Z" },
+        { "id": "d4", "text": "I have a different opinion on this.", "source": "static", "createdAt": "2024-09-19T14:03:00Z" },
+        { "id": "d5", "text": "Fascinating, tell me more.", "source": "static", "createdAt": "2024-09-19T14:04:00Z" }
+    ]
+}
