@@ -1,4 +1,4 @@
-import type { Tweet } from './types';
+import type { Reply, Tweet } from './types';
 
 const TWEET_LIST_URL = 'https://krishnavir.app.n8n.cloud/webhook/e2269146-987f-422f-801d-0f05bc1a336a';
 const TWEET_REPLY_URL = "https://krishnavir.app.n8n.cloud/webhook/ff70f5fb-a2cb-4103-814e-314a515c4d88";
@@ -24,11 +24,10 @@ export async function getTweets(): Promise<Tweet[]> {
 }
 
 /**
- * Fetches a single tweet by its ID from the main tweet list.
- * This function gets all tweets and then finds the one with the matching ID.
- * @param id The ID of the tweet to fetch.
+ * Fetches the replies for a single tweet by its ID.
+ * @param id The ID of the tweet to fetch replies for.
  */
-export async function getTweetById(id: string): Promise<Tweet | undefined> {
+export async function getTweetRepliesById(id: string): Promise<Reply[] | undefined> {
   try {
     const url = new URL(TWEET_REPLY_URL);
     url.searchParams.append('id', id);
@@ -42,26 +41,22 @@ export async function getTweetById(id: string): Promise<Tweet | undefined> {
     });
 
     if (!response.ok) {
-      console.error(`Failed to fetch tweet with id ${id}. Status:`, response.status);
+      console.error(`Failed to fetch replies for tweet with id ${id}. Status:`, response.status);
       return undefined;
     }
 
     const data = await response.json();
-    console.log(data, "data")
-    // Assuming the webhook returns an array with the tweet object inside
-    if (Array.isArray(data) && data.length > 0) {
-        return data[0] as Tweet;
-    }
-    // If it returns the object directly
-    if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
-        return data as Tweet;
+    
+    // The webhook returns an array of reply objects.
+    if (Array.isArray(data)) {
+        return data as Reply[];
     }
 
-    console.error(`Unexpected data format for tweet with id ${id}:`, data);
+    console.error(`Unexpected data format for replies for tweet with id ${id}:`, data);
     return undefined;
     
   } catch (error) {
-    console.error(`An error occurred while fetching tweet by ID ${id}:`, error);
+    console.error(`An error occurred while fetching replies for tweet ID ${id}:`, error);
     return undefined;
   }
 }

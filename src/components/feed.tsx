@@ -4,6 +4,7 @@ import type { Tweet } from '@/lib/types';
 import TweetCard from './tweet-card';
 import TopBar from './top-bar';
 import { useState } from 'react';
+import Link from 'next/link';
 
 type FeedProps = {
   tweets: Tweet[];
@@ -22,14 +23,25 @@ export default function Feed({ tweets }: FeedProps) {
     return true; // 'all'
   });
 
+  const handleTweetClick = (tweet: Tweet) => {
+    if (tweet && tweet.id) {
+      sessionStorage.setItem(`tweet:${tweet.id}`, JSON.stringify(tweet));
+    }
+  };
+
   return (
     <section>
       <TopBar filter={filter} setFilter={setFilter} />
       <div className="flex flex-col items-center">
         {filteredTweets.map((tweet, index) => (
-          <div key={tweet.id} className="w-full max-w-[720px] ">
+          <Link
+            key={tweet.id}
+            href={`/post/${tweet.id}`}
+            onClick={() => handleTweetClick(tweet)}
+            className="w-full max-w-[720px] block"
+          >
             <TweetCard tweet={tweet} isLCP={index === 0} />
-          </div>
+          </Link>
         ))}
       </div>
     </section>

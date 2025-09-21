@@ -175,9 +175,15 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId }: Suggestion
   );
 }
 
-export default function ReplySuggestions({ postId, initialSuggestions }: { postId: string; initialSuggestions: ReplySuggestion[] }) {
-  const [suggestions, setSuggestions] = useState(initialSuggestions);
-  const [isLoading, setIsLoading] = useState(false);
+type ReplySuggestionsProps = {
+  postId: string;
+  initialSuggestions?: ReplySuggestion[];
+};
+
+
+export default function ReplySuggestions({ postId, initialSuggestions = [] }: ReplySuggestionsProps) {
+  const [suggestions, setSuggestions] = useState<ReplySuggestion[]>(initialSuggestions);
+  const [isLoading, setIsLoading] = useState(initialSuggestions.length === 0);
 
   const fetchSuggestions = async () => {
     setIsLoading(true);
@@ -187,8 +193,10 @@ export default function ReplySuggestions({ postId, initialSuggestions }: { postI
   };
   
   useEffect(() => {
-    setSuggestions(initialSuggestions);
-  }, [initialSuggestions]);
+    if (initialSuggestions.length === 0) {
+      fetchSuggestions();
+    }
+  }, [postId, initialSuggestions.length]);
 
   const handleRegenerate = () => {
      fetchSuggestions();
@@ -222,7 +230,7 @@ export default function ReplySuggestions({ postId, initialSuggestions }: { postI
       </CardHeader>
       <CardContent className="space-y-2 min-h-[240px]">
         {isLoading ? (
-            <div className="flex justify-center items-center h-full">
+            <div className="flex justify-center items-center h-full min-h-[240px]">
                 <Loader2 className="animate-spin text-muted-foreground" size={24} />
             </div>
         ) : (
@@ -231,7 +239,7 @@ export default function ReplySuggestions({ postId, initialSuggestions }: { postI
                     <SuggestionRow key={index} suggestion={suggestion} index={index} saveSuggestion={handleSaveSuggestion} postId={postId} />
                 ))
             ) : (
-                <div className="flex justify-center items-center h-full text-sm text-muted-foreground">
+                <div className="flex justify-center items-center h-full text-sm text-muted-foreground min-h-[240px]">
                     No suggestions available.
                 </div>
             )
