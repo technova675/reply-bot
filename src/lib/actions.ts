@@ -27,8 +27,7 @@ export async function saveHandle(handle: string) {
       // We can return a more specific error to the client if needed
       return { success: false, error: `Webhook failed: ${response.statusText}` };
     }
-    
-    console.log(`[Server Action] Handle successfully sent to n8n webhook: ${handle}`);
+  
     return { success: true };
 
   } catch (error) {
@@ -42,7 +41,7 @@ export async function saveHandle(handle: string) {
  * @param postId The ID of the post to get suggestions for.
  */
 export async function getSuggestions(postId: string): Promise<ReplySuggestion[]> {
-  const url = 'https://krishnavir.app.n8n.cloud/webhook/298f9846-8ba0-4774-8b19-a703adf81cbc';
+  const url = 'https://krishnavir.app.n8n.cloud/webhook/64313aa3-aee7-4c42-be5f-f19f796a3601';
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -70,7 +69,6 @@ export async function getSuggestions(postId: string): Promise<ReplySuggestion[]>
       return data.content.map((text: string) => ({ text }));
     }
 
-    console.log("SUGGESTION data format unexpected =>", data);
     return []; 
   } catch (error) {
     console.error('An error occurred while fetching suggestions:', error);
