@@ -2,7 +2,7 @@
 // Reply suggestions: dynamic fetch from n8n
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, RotateCw, Pencil, Save } from 'lucide-react';
@@ -177,26 +177,29 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId }: Suggestion
 
 type ReplySuggestionsProps = {
   postId: string;
-  initialSuggestions?: ReplySuggestion[];
 };
 
 
-export default function ReplySuggestions({ postId, initialSuggestions = [] }: ReplySuggestionsProps) {
-  const [suggestions, setSuggestions] = useState<ReplySuggestion[]>(initialSuggestions);
-  const [isLoading, setIsLoading] = useState(initialSuggestions.length === 0);
+export default function ReplySuggestions({ postId }: ReplySuggestionsProps) {
+  const [suggestions, setSuggestions] = useState<ReplySuggestion[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchSuggestions = async () => {
+  const fetchSuggestions = useCallback(async () => {
     setIsLoading(true);
-    const newSuggestions = await getSuggestions(postId);
-    setSuggestions(newSuggestions);
-    setIsLoading(false);
-  };
+    try {
+        const newSuggestions = await getSuggestions(postId);
+        setSuggestions(newSuggestions);
+    } catch (error) {
+        console.error("Failed to fetch suggestions:", error);
+        setSuggestions([]);
+    } finally {
+        setIsLoading(false);
+    }
+  }, [postId]);
   
   useEffect(() => {
-    if (initialSuggestions.length === 0) {
-      fetchSuggestions();
-    }
-  }, [postId, initialSuggestions.length]);
+    fetchSuggestions();
+  }, [fetchSuggestions]);
 
   const handleRegenerate = () => {
      fetchSuggestions();

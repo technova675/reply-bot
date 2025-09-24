@@ -1,77 +1,22 @@
 
 import Image from 'next/image';
-import { MessageCircle, Repeat2, Heart, Upload, Bookmark } from 'lucide-react';
-import type { Media, Tweet } from '@/lib/types';
+import { MessageCircle, Repeat2, Heart, Upload, Bookmark, BadgeCheck } from 'lucide-react';
+import type { Tweet } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, formatNumber } from '@/lib/utils';
 import React from 'react';
+import QuoteCard from './quote-card';
+import MediaGrid from './media-grid';
 
 type TweetCardProps = {
-  tweet: Tweet;
+  tweet: Tweet & { quoteData?: Tweet[] };
   isLCP?: boolean;
   className?: string;
 };
 
-function MediaGrid({ media, isLCP }: { media: string[], isLCP?: boolean }) {
-  if (!media || media.length === 0) return null;
-
-  const gridClasses = {
-    1: 'grid-cols-1',
-    2: 'grid-cols-2',
-    3: 'grid-cols-2 grid-rows-2',
-    4: 'grid-cols-2 grid-rows-2',
-  }[media.length] || 'grid-cols-1';
-
-  return (
-    <div
-      className={cn(
-        "mt-3 grid gap-1 rounded-2xl overflow-hidden border border-border",
-        gridClasses
-      )}
-    >
-      {media.map((item, index) => {
-        const isLaidOut = media.length === 3 && index === 0;
-        const imageUrl = item;
-        
-        return (
-          <div
-            key={index}
-            className={cn("relative aspect-video", { "row-span-2": isLaidOut })}
-          >
-            <Image
-              src={imageUrl}
-              alt={`Tweet media ${index + 1}`}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover"
-              priority={isLCP && index === 0} // Apply priority to the first image of the first tweet
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 const TweetCard = React.forwardRef<HTMLDivElement, TweetCardProps>(
   ({ tweet, isLCP = false, className }, ref) => {
-    const { authorName, authorUserName, authorProfilePicture, text, fullText,  media, replyCount, retweetCount, likeCount, bookmarkCount } = tweet;
-
-    let parsedMedia: string[] = [];
-    try {
-      if (typeof media === 'string') {
-        parsedMedia = JSON.parse(media);
-      } else if (Array.isArray(media)) {
-         const shapedMedia = media as any[];
-         if (shapedMedia.every(item => typeof item === 'string')) {
-             parsedMedia = shapedMedia;
-         } else if (shapedMedia.every(item => typeof item.media_url_httpscin === 'string')) {
-             parsedMedia = shapedMedia.map(item => item.media_url_https);
-         }
-      }
-    } catch (error) {
-      console.error("Failed to parse media JSON string:", error);
-    }
+    const { authorName, authorUserName, authorProfilePicture, authorIsBlueVerified, text, fullText,  images, replyCount, retweetCount, likeCount, bookmarkCount, isReply, isReplyToUsername, quoteData } = tweet;
 
     const actionItems = [
       { icon: MessageCircle, value: replyCount, color: 'hover:text-primary' },
@@ -80,6 +25,24 @@ const TweetCard = React.forwardRef<HTMLDivElement, TweetCardProps>(
       { icon: Bookmark, value: bookmarkCount, color: 'hover:text-primary' },
     ];
     
+    let imageUrls: string[] = [];
+    if (typeof images === 'string' && images.trim() !== '' && images.startsWith('[') && images.endsWith(']')) {
+        try {
+            const parsed = JSON.parse(images);
+            if (Array.isArray(parsed)) {
+                imageUrls = parsed;
+            }
+        } catch (e) {
+            // Not a JSON array, treat as single image if it's a valid URL string
+            if(!images.startsWith('[') && images.includes('https')) {
+                imageUrls = [images];
+            }
+        }
+    } else if (typeof images === 'string' && images.trim() !== '' && !images.startsWith('[')) {
+        imageUrls = [images];
+    }
+
+
     return (
         <article ref={ref} className={cn("flex flex-col p-4 border-b border-border hover:bg-muted/50 transition-colors duration-200 cursor-pointer", className)}>
           <div className="flex gap-4">
@@ -88,14 +51,31 @@ const TweetCard = React.forwardRef<HTMLDivElement, TweetCardProps>(
               <AvatarFallback>{authorName.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-1 text-sm">
                 <span className="font-bold hover:underline">{authorName}</span>
+                {authorIsBlueVerified && <BadgeCheck className="h-4 w-4 text-primary" />}
+                <span className="text-muted-foreground ml-1">@{authorUserName}</span>
               </div>
-               <div className="flex items-center gap-2 text-sm">
-                <span className="text-muted-foreground">@{authorUserName}</span>
-              </div>
+              
+              {isReply && isReplyToUsername && (
+                <p className="text-sm text-muted-foreground">
+                  Replying to <span className="text-primary">@{isReplyToUsername}</span>
+                </p>
+              )}
+
               {fullText ? <p className="text-base whitespace-pre-wrap">{fullText}</p> : <p className="text-base whitespace-pre-wrap">{text}</p>}
-              <MediaGrid media={parsedMedia} isLCP={isLCP} />
+              
+              {imageUrls.length > 0 && (
+                <div className="mt-3 overflow-hidden rounded-2xl border border-border">
+                  <MediaGrid images={imageUrls} isLCP={isLCP} />
+                </div>
+              )}
+
+              {quoteData && quoteData.length > 0 && (
+                <div className="mt-3">
+                  <QuoteCard quote={quoteData[0]} />
+                </div>
+              )}
              
               <div className="flex justify-between items-center mt-4 max-w-md text-muted-foreground">
                 {actionItems.map((item, index) => (

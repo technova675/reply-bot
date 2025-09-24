@@ -2,8 +2,6 @@
 
 import type { Tweet } from '@/lib/types';
 import TweetCard from './tweet-card';
-import TopBar from './top-bar';
-import { useState } from 'react';
 import Link from 'next/link';
 
 type FeedProps = {
@@ -11,18 +9,6 @@ type FeedProps = {
 };
 
 export default function Feed({ tweets }: FeedProps) {
-  const [filter, setFilter] = useState('all');
-
-  const filteredTweets = tweets.filter(tweet => {
-    if (filter === 'replied') {
-      return tweet.isReplied === true;
-    }
-    if (filter === 'not-replied') {
-      return !tweet.isReplied;
-    }
-    return true; // 'all'
-  });
-
   const handleTweetClick = (tweet: Tweet) => {
     if (tweet && tweet.id) {
       sessionStorage.setItem(`tweet:${tweet.id}`, JSON.stringify(tweet));
@@ -31,9 +17,13 @@ export default function Feed({ tweets }: FeedProps) {
 
   return (
     <section>
-      <TopBar filter={filter} setFilter={setFilter} />
+       <header className="sticky top-0 z-10 flex flex-col p-4 bg-background/80 backdrop-blur-sm border-b border-border">
+            <div className="flex items-center justify-between">
+                <h1 className="text-xl font-bold font-headline">Home</h1>
+            </div>
+        </header>
       <div className="flex flex-col items-center">
-        {filteredTweets.map((tweet, index) => (
+        {tweets.map((tweet, index) => (
           <Link
             key={tweet.id}
             href={`/post/${tweet.id}`}

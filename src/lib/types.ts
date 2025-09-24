@@ -43,25 +43,32 @@ export type Tweet = {
   createdAt: string;
   text: string;
   fullText?: string;
-  media: string | string[] | Media[];
+  images: string;
   replyCount: number;
   retweetCount: number;
   likeCount: number;
   viewCount: number;
   bookmarkCount: number;
   isReplied?: boolean;
-  replyList: Reply[]; 
+  replyList?: Reply[]; 
   suggestions?: string[];
-  
+  isQuote?: boolean;
+  isRetweeted?: boolean;
+  quoteData?: any[]; 
   // Flattened author properties
   authorName: string;
   authorUserName: string;
   authorProfilePicture: string;
   authorId: string;
+  authorIsBlueVerified?: boolean;
 
   // Other properties
   url: string;
   isReply: boolean;
+  isReplyToId?: string;
+  isReplyToUserId?: string;
+  isReplyToUsername?: string;
+  conversationId?: string;
 };
 
 export type ReplySuggestion = {

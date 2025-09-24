@@ -73,26 +73,8 @@ export default function PostPage() {
         notFound();
     }
 
-    const { authorName, authorUserName, authorProfilePicture, createdAt, text, fullText, media, replyCount, retweetCount, likeCount, viewCount, bookmarkCount, suggestions } = tweet;
+    const { authorName, authorUserName, authorProfilePicture, createdAt, text, fullText, images, replyCount, retweetCount, likeCount, viewCount, bookmarkCount, suggestions } = tweet;
     
-    let parsedMedia: { media_url_https: string, type: string }[] = [];
-    try {
-        if (typeof media === 'string') {
-            const mediaArray = JSON.parse(media);
-            if (Array.isArray(mediaArray) && mediaArray.length > 0 && typeof mediaArray[0] === 'string') {
-                parsedMedia = mediaArray.map((url: string) => ({ media_url_https: url, type: 'photo' }));
-            } else if (Array.isArray(mediaArray)) {
-                parsedMedia = mediaArray;
-            }
-        } else if (Array.isArray(media)) {
-            parsedMedia = media as any[];
-        }
-    } catch (error) {
-        console.error("Failed to parse media JSON string on post page:", error);
-    }
-    
-    const initialSuggestions = suggestions?.map(s => ({ text: s })) || [];
-
     return (
         <div className="min-h-screen bg-background text-foreground">
             <GlobalHeader />
@@ -119,19 +101,15 @@ export default function PostPage() {
 
                         <p className="text-xl leading-relaxed whitespace-pre-wrap my-3">{fullText || text}</p>
 
-                        {parsedMedia.length > 0 && (
-                            <div className="mt-3 grid gap-1 rounded-2xl overflow-hidden border border-border aspect-video">
-                                {parsedMedia.map((item, index) => (
-                                    <div key={item.media_url_https || index} className="relative w-full h-full">
-                                        <Image
-                                            src={item.media_url_https}
-                                            alt={`Tweet media ${index + 1}`}
-                                            fill
-                                            sizes="(max-width: 768px) 100vw, 50vw"
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                ))}
+                        {images && images !== " " && (
+                            <div className="mt-3 relative max-h-[510px] w-full rounded-2xl overflow-hidden border border-border">
+                                <Image
+                                    src={images}
+                                    alt="Tweet image"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="!relative object-contain w-full h-auto"
+                                />
                             </div>
                         )}
 
@@ -158,7 +136,7 @@ export default function PostPage() {
                                 <div className={`flex items-center gap-2 text-sm transition-colors duration-200 hover:text-primary`}>
                                     <Bookmark size={22} strokeWidth={1.5} />
                                     {bookmarkCount > 0 && <span className="font-semibold text-sm">{formatNumber(bookmarkCount)}</span>}
-                                </div>
+                                 </div>
                                 <div className={`flex items-center gap-2 text-sm transition-colors duration-200 hover:text-primary`}>
                                     <Upload size={22} strokeWidth={1.5} />
                                 </div>

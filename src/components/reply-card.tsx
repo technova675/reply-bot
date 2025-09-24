@@ -28,7 +28,7 @@ export default function ReplyCard({ reply }: ReplyCardProps) {
     { icon: MessageCircle, value: replyCount, color: 'hover:text-primary' },
     { icon: Repeat2, value: 0, color: 'hover:text-green-500' }, // retweetCount is not in the new object
     { icon: Heart, value: likeCount, color: 'hover:text-red-500' },
-    { icon: BarChart2, value: viewCount, color: 'hover:text-primary' },
+    { icon: BarChart2, value: viewCount, color: 'hovertext-primary' },
   ];
   
   // Media can be a single URL string.
@@ -61,12 +61,12 @@ export default function ReplyCard({ reply }: ReplyCardProps) {
             )}
 
             {hasMedia && (
-                <div className="mt-2 relative w-full aspect-video rounded-xl overflow-hidden border border-border">
+                <div className="mt-2 relative w-full max-h-[400px] rounded-xl overflow-hidden border border-border">
                     <Image
                         src={media as string}
                         alt="Reply media"
                         fill
-                        className="object-cover"
+                        className="!relative object-contain w-full h-auto"
                     />
                 </div>
             )}
