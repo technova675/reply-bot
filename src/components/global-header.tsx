@@ -96,9 +96,6 @@ export default function GlobalHeader() {
             <ChirpIcon />
           </Link>
         </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-            <AddHandleModal />
-        </div>
       </div>
     </header>
   );

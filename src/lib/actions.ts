@@ -27,7 +27,8 @@ export async function saveHandle(handle: string) {
       // We can return a more specific error to the client if needed
       return { success: false, error: `Webhook failed: ${response.statusText}` };
     }
-  
+    
+    console.log(`[Server Action] Handle successfully sent to n8n webhook: ${handle}`);
     return { success: true };
 
   } catch (error) {
@@ -57,7 +58,12 @@ export async function getSuggestions(postId: string): Promise<ReplySuggestion[]>
       return [];
     }
 
-    const data = await response.json();
+    const responseText = await response.text();
+    if (!responseText) {
+      return []; // Return empty array if response body is empty
+    }
+
+    const data = JSON.parse(responseText);
     
     // The API might return an array with one object: `[{ "content": [...] }]`
     if (Array.isArray(data) && data.length > 0 && data[0].content && Array.isArray(data[0].content)) {
@@ -69,6 +75,7 @@ export async function getSuggestions(postId: string): Promise<ReplySuggestion[]>
       return data.content.map((text: string) => ({ text }));
     }
 
+    console.log("SUGGESTION data format unexpected =>", data);
     return []; 
   } catch (error) {
     console.error('An error occurred while fetching suggestions:', error);

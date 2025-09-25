@@ -208,6 +208,7 @@ export default function ReplySuggestions({ postId }: ReplySuggestionsProps) {
   const handleSaveSuggestion = async ({ index, text }: { index: number; text: string }): Promise<{ ok: boolean; err?: string }> => {
     // This is a placeholder for a real save operation.
     // In a real app, this would be a server action.
+    console.log(`Saving suggestion ${index}: ${text}`);
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));

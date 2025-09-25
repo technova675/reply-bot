@@ -3,12 +3,15 @@
 import type { Tweet } from '@/lib/types';
 import TweetCard from './tweet-card';
 import Link from 'next/link';
+import TopBar from './top-bar';
 
 type FeedProps = {
   tweets: Tweet[];
+  filter: string;
+  setFilter: (filter: string) => void;
 };
 
-export default function Feed({ tweets }: FeedProps) {
+export default function Feed({ tweets, filter, setFilter }: FeedProps) {
   const handleTweetClick = (tweet: Tweet) => {
     if (tweet && tweet.id) {
       sessionStorage.setItem(`tweet:${tweet.id}`, JSON.stringify(tweet));
@@ -17,11 +20,7 @@ export default function Feed({ tweets }: FeedProps) {
 
   return (
     <section>
-       <header className="sticky top-0 z-10 flex flex-col p-4 bg-background/80 backdrop-blur-sm border-b border-border">
-            <div className="flex items-center justify-between">
-                <h1 className="text-xl font-bold font-headline">Home</h1>
-            </div>
-        </header>
+      <TopBar filter={filter} setFilter={setFilter} />
       <div className="flex flex-col items-center">
         {tweets.map((tweet, index) => (
           <Link

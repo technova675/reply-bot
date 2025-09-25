@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { getTweetRepliesById } from '@/lib/data';
@@ -15,6 +16,7 @@ import ReplySuggestions from '@/components/reply-suggestions';
 import GlobalHeader from '@/components/global-header';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import QuoteCard from '@/components/quote-card';
 
 export default function PostPage() {
     const params = useParams();
@@ -22,6 +24,7 @@ export default function PostPage() {
     const [tweet, setTweet] = useState<Tweet | null | undefined>(undefined);
     const [replies, setReplies] = useState<Reply[]>([]);
     const [isLoadingReplies, setIsLoadingReplies] = useState(true);
+    const [formattedTime, setFormattedTime] = useState('');
 
     useEffect(() => {
         const fetchTweetAndReplies = async () => {
@@ -30,6 +33,9 @@ export default function PostPage() {
             if (cachedTweetJSON) {
                 const cachedTweet = JSON.parse(cachedTweetJSON);
                 setTweet(cachedTweet);
+                if (cachedTweet.createdAt) {
+                    setFormattedTime(TweetTime(cachedTweet.createdAt));
+                }
                 // Now that we have the tweet, fetch its replies
                 try {
                     setIsLoadingReplies(true);
@@ -73,7 +79,7 @@ export default function PostPage() {
         notFound();
     }
 
-    const { authorName, authorUserName, authorProfilePicture, createdAt, text, fullText, images, replyCount, retweetCount, likeCount, viewCount, bookmarkCount, suggestions } = tweet;
+    const { authorName, authorUserName, authorProfilePicture, createdAt, text, fullText, images, replyCount, retweetCount, likeCount, viewCount, bookmarkCount, suggestions, replied_status, quoteData } = tweet;
     
     return (
         <div className="min-h-screen bg-background text-foreground">
@@ -99,22 +105,36 @@ export default function PostPage() {
                             </div>
                         </div>
 
-                        <p className="text-xl leading-relaxed whitespace-pre-wrap my-3">{fullText || text}</p>
+                        <div className="space-y-3">
+                            <p className="text-xl leading-relaxed whitespace-pre-wrap">{fullText || text}</p>
 
-                        {images && images !== " " && (
-                            <div className="mt-3 relative max-h-[510px] w-full rounded-2xl overflow-hidden border border-border">
-                                <Image
-                                    src={images}
-                                    alt="Tweet image"
-                                    fill
-                                    sizes="(max-width: 768px) 100vw, 50vw"
-                                    className="!relative object-contain w-full h-auto"
-                                />
-                            </div>
-                        )}
+                            {images && images !== " " && (
+                                <div className="mt-3 relative max-h-[510px] w-full rounded-2xl overflow-hidden border border-border">
+                                    <Image
+                                        src={images}
+                                        alt="Tweet image"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        className="!relative object-contain w-full h-auto"
+                                    />
+                                </div>
+                            )}
+
+                            {quoteData && quoteData.length > 0 && (
+                                <div className="mt-3">
+                                  <QuoteCard quote={quoteData[0]} />
+                                </div>
+                            )}
+                        </div>
 
                         <div className="text-sm text-muted-foreground my-3">
-                            <span>{TweetTime(createdAt)}</span> · <span className="font-bold text-foreground">{formatNumber(viewCount)}</span> Views
+                            {formattedTime ? (
+                                <>
+                                    <span>{formattedTime}</span> · <span className="font-bold text-foreground">{formatNumber(viewCount)}</span> Views
+                                </>
+                            ) : (
+                                <span className="font-bold text-foreground">{formatNumber(viewCount)}</span>
+                            )}
                         </div>
 
                         <Separator className="my-2" />
@@ -162,9 +182,11 @@ export default function PostPage() {
                         )}
                     </div>
                 </main>
-                <aside className="hidden lg:block w-[420px] xl:w-[480px] flex-shrink-0 pt-4">
-                     <ReplySuggestions postId={id} />
-                </aside>
+                 {replied_status === 'PENDING' && (
+                    <aside className="hidden lg:block w-[420px] xl:w-[480px] flex-shrink-0 pt-4">
+                        <ReplySuggestions postId={id} />
+                    </aside>
+                )}
             </div>
         </div>
     );

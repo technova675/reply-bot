@@ -3,7 +3,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageCircle, Repeat2, Heart, BarChart2, ExternalLink } from 'lucide-react';
 import type { Reply } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,12 +18,17 @@ type ReplyCardProps = {
 export default function ReplyCard({ reply }: ReplyCardProps) {
   const { authorName, authorUserName, authorProfilePicture, text, media, replyCount, likeCount, viewCount, createdAt, url } = reply;
   const [isExpanded, setIsExpanded] = useState(false);
+  const [timeAgo, setTimeAgo] = useState('');
+
+  useEffect(() => {
+    if (createdAt) {
+      setTimeAgo(formatDistanceToNow(new Date(createdAt), { addSuffix: true }));
+    }
+  }, [createdAt]);
   
   const isLongText = text.length > 150;
   const shouldClamp = isLongText && !isExpanded;
   
-  const timeAgo = createdAt ? formatDistanceToNow(new Date(createdAt), { addSuffix: true }) : '';
-
   const actionItems = [
     { icon: MessageCircle, value: replyCount, color: 'hover:text-primary' },
     { icon: Repeat2, value: 0, color: 'hover:text-green-500' }, // retweetCount is not in the new object
@@ -37,7 +42,7 @@ export default function ReplyCard({ reply }: ReplyCardProps) {
   return (
       <article className="flex flex-col px-4 py-3 border-b border-border hover:bg-muted/50 transition-colors duration-200">
         <div className="flex gap-3">
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center w-10">
             <Avatar className="w-10 h-10">
               <AvatarImage src={authorProfilePicture} alt={`${authorName}'s avatar`} />
               <AvatarFallback>{authorName.charAt(0)}</AvatarFallback>

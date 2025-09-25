@@ -1,8 +1,9 @@
-import type { Reply, Tweet } from './types';
+import type { Reply, Tweet, UserProfile } from './types';
 
 const TWEET_LIST_URL = 'https://krishnavir.app.n8n.cloud/webhook/0a587209-3bfa-4bfb-aa41-6187541931d4';
 const TWEET_REPLY_URL = "https://krishnavir.app.n8n.cloud/webhook/ff70f5fb-a2cb-4103-814e-314a515c4d88";
 const QUOTES_URL = "https://krishnavir.app.n8n.cloud/webhook/d08bcddb-eb90-405d-ac05-491ce7035bc6";
+const USER_PROFILE_URL = "https://krishnavir.app.n8n.cloud/webhook/011c37f1-9dd4-434f-aa38-4dc25b5b9e59";
 
 /**
  * Fetches the full list of tweets from the n8n workflow.
@@ -82,5 +83,32 @@ export async function getQuotes(): Promise<any[]> {
   } catch (error) {
     console.error('An error occurred while fetching quotes:', error);
     return [];
+  }
+}
+
+/**
+ * Fetches the user profile from the n8n workflow.
+ */
+export async function getUserProfile(): Promise<UserProfile | null> {
+  try {
+    const response = await fetch(USER_PROFILE_URL, { cache: 'no-store' });
+    if (!response.ok) {
+      console.error('Failed to fetch user profile. Status:', response.status);
+      return null;
+    }
+    const data = await response.json();
+    // The webhook returns an array with a single user object.
+    if (Array.isArray(data) && data.length > 0) {
+      const user = data[0];
+      return {
+        name: user.name,
+        handle: user.username,
+        avatar: user.profileImage,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('An error occurred while fetching user profile:', error);
+    return null;
   }
 }

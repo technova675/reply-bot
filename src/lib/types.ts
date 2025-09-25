@@ -1,4 +1,7 @@
 
+
+
+
 export type Author = {
   name: string;
   userName: string;
@@ -55,6 +58,7 @@ export type Tweet = {
   isQuote?: boolean;
   isRetweeted?: boolean;
   quoteData?: any[]; 
+  
   // Flattened author properties
   authorName: string;
   authorUserName: string;
@@ -69,8 +73,17 @@ export type Tweet = {
   isReplyToUserId?: string;
   isReplyToUsername?: string;
   conversationId?: string;
+
+  //status property
+  replied_status?: string;
 };
 
 export type ReplySuggestion = {
     text: string;
+};
+
+export type UserProfile = {
+  name: string;
+  handle: string;
+  avatar: string;
 };
