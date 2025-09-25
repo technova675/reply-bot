@@ -76,6 +76,10 @@ export type Tweet = {
 
   //status property
   replied_status?: string;
+
+  //video
+  VideoUrl?: string;
+  VideoPresent?: boolean
 };
 
 export type ReplySuggestion = {

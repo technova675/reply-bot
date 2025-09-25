@@ -79,7 +79,7 @@ export default function PostPage() {
         notFound();
     }
 
-    const { authorName, authorUserName, authorProfilePicture, createdAt, text, fullText, images, replyCount, retweetCount, likeCount, viewCount, bookmarkCount, suggestions, replied_status, quoteData } = tweet;
+    const { authorName, authorUserName, authorProfilePicture, createdAt, text, fullText, images, replyCount, retweetCount, likeCount, viewCount, bookmarkCount, suggestions, replied_status, quoteData, VideoPresent, VideoUrl } = tweet;
     
     return (
         <div className="min-h-screen bg-background text-foreground">
@@ -94,7 +94,7 @@ export default function PostPage() {
                     </header>
 
                     <div className="px-4 py-3">
-                        <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-start gap-3 mb-4">
                             <Avatar className="w-12 h-12">
                                 <AvatarImage src={authorProfilePicture} alt={`${authorName}'s avatar`} />
                                 <AvatarFallback>{authorName.charAt(0)}</AvatarFallback>
@@ -108,7 +108,18 @@ export default function PostPage() {
                         <div className="space-y-3">
                             <p className="text-xl leading-relaxed whitespace-pre-wrap">{fullText || text}</p>
 
-                            {images && images !== " " && (
+                            {VideoPresent && VideoUrl && (
+                                <div className="mt-3 overflow-hidden rounded-2xl border border-border">
+                                    <video
+                                        src={VideoUrl}
+                                        controls
+                                        className="w-full h-auto"
+                                        preload="metadata"
+                                    />
+                                </div>
+                            )}
+
+                            {!VideoPresent && images && images !== " " && (
                                 <div className="mt-3 relative max-h-[510px] w-full rounded-2xl overflow-hidden border border-border">
                                     <Image
                                         src={images}
@@ -164,22 +175,25 @@ export default function PostPage() {
                         </div>
                         <Separator className="my-2" />
                     </div>
-                    
-                    <div className="-mx-4">
-                        {isLoadingReplies ? (
-                             <div className="flex justify-center items-center py-10">
-                                <Loader2 className="animate-spin text-muted-foreground" size={24} />
-                                <p className="ml-2 text-muted-foreground">Loading replies...</p>
-                            </div>
-                        ) : replies.length > 0 ? (
-                            replies.map(reply => (
-                                <ReplyCard key={reply.id} reply={reply} />
-                            ))
-                        ) : (
-                            <div className="text-center text-muted-foreground py-10">
-                                <p>No replies yet.</p>
-                            </div>
-                        )}
+
+                    <div className="relative -mx-4">
+                      {replies.length > 0 && (
+                        <div className="absolute left-10 top-0 h-full w-0.5 bg-border -z-10 -ml-px"></div>
+                      )}
+                      {isLoadingReplies ? (
+                           <div className="flex justify-center items-center py-10">
+                              <Loader2 className="animate-spin text-muted-foreground" size={24} />
+                              <p className="ml-2 text-muted-foreground">Loading replies...</p>
+                          </div>
+                      ) : replies.length > 0 ? (
+                          replies.map(reply => (
+                              <ReplyCard key={reply.id} reply={reply} />
+                          ))
+                      ) : (
+                          <div className="text-center text-muted-foreground py-10">
+                              <p>No replies yet.</p>
+                          </div>
+                      )}
                     </div>
                 </main>
                  {replied_status === 'PENDING' && (

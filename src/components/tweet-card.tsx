@@ -16,7 +16,7 @@ type TweetCardProps = {
 
 const TweetCard = React.forwardRef<HTMLDivElement, TweetCardProps>(
   ({ tweet, isLCP = false, className }, ref) => {
-    const { authorName, authorUserName, authorProfilePicture, authorIsBlueVerified, text, fullText,  images, replyCount, retweetCount, likeCount, bookmarkCount, isReply, isReplyToUsername, quoteData } = tweet;
+    const { authorName, authorUserName, authorProfilePicture, authorIsBlueVerified, text, fullText,  images, replyCount, retweetCount, likeCount, bookmarkCount, isReply, isReplyToUsername, quoteData, VideoPresent, VideoUrl } = tweet;
 
     const actionItems = [
       { icon: MessageCircle, value: replyCount, color: 'hover:text-primary' },
@@ -65,7 +65,18 @@ const TweetCard = React.forwardRef<HTMLDivElement, TweetCardProps>(
 
               {fullText ? <p className="text-base whitespace-pre-wrap">{fullText}</p> : <p className="text-base whitespace-pre-wrap">{text}</p>}
               
-              {imageUrls.length > 0 && (
+              {VideoPresent && VideoUrl && (
+                <div className="mt-3 overflow-hidden rounded-2xl border border-border">
+                  <video
+                    src={VideoUrl}
+                    controls
+                    className="w-full h-auto"
+                    preload="metadata"
+                  />
+                </div>
+              )}
+
+              {!VideoPresent && imageUrls.length > 0 && (
                 <div className="mt-3 overflow-hidden rounded-2xl border border-border">
                   <MediaGrid images={imageUrls} isLCP={isLCP} />
                 </div>
