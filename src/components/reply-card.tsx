@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, formatNumber } from '@/lib/utils';
 import { Button } from './ui/button';
 import { formatDistanceToNow } from 'date-fns';
+import MediaGrid from './media-grid';
 
 type ReplyCardProps = {
   reply: Reply;
@@ -36,8 +37,22 @@ export default function ReplyCard({ reply }: ReplyCardProps) {
     { icon: BarChart2, value: viewCount, color: 'hovertext-primary' },
   ];
   
-  // Media can be a single URL string.
-  const hasMedia = typeof media === 'string' && media.trim() !== '';
+  let imageUrls: string[] = [];
+  if (typeof media === 'string' && media.trim() !== '') {
+    if (media.startsWith('[') && media.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(media);
+        if (Array.isArray(parsed)) {
+          imageUrls = parsed;
+        }
+      } catch (e) {
+        console.error("Failed to parse media JSON string in ReplyCard:", e);
+      }
+    } else {
+      // Handle comma-separated strings
+      imageUrls = media.split(',').map(url => url.trim()).filter(url => url.length > 0);
+    }
+  }
 
   return (
       <article className="flex flex-col px-4 py-3 border-b border-border hover:bg-muted/50 transition-colors duration-200">
@@ -65,14 +80,9 @@ export default function ReplyCard({ reply }: ReplyCardProps) {
                 </Button>
             )}
 
-            {hasMedia && (
-                <div className="mt-2 relative w-full max-h-[400px] rounded-xl overflow-hidden border border-border">
-                    <Image
-                        src={media as string}
-                        alt="Reply media"
-                        fill
-                        className="!relative object-contain w-full h-auto"
-                    />
+            {imageUrls.length > 0 && (
+                <div className="mt-2 rounded-xl overflow-hidden border border-border">
+                    <MediaGrid images={imageUrls} />
                 </div>
             )}
 

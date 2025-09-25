@@ -22,14 +22,19 @@ export default function QuoteCard({ quote }: QuoteCardProps) {
   } = quote;
 
   let imageUrls: string[] = [];
-  if (typeof images === 'string' && images.startsWith('[') && images.endsWith(']')) {
-    try {
-      const parsedImages = JSON.parse(images);
-      if (Array.isArray(parsedImages) && parsedImages.length > 0) {
-        imageUrls = parsedImages;
+  if (typeof images === 'string' && images.trim() !== '') {
+    if (images.startsWith('[') && images.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(images);
+        if (Array.isArray(parsed)) {
+            imageUrls = parsed;
+        }
+      } catch (e) {
+        console.error("Failed to parse images JSON string in QuoteCard:", e);
       }
-    } catch (e) {
-      console.error("Failed to parse images string in QuoteCard:", e);
+    } else {
+      // Handle comma-separated strings
+      imageUrls = images.split(',').map(url => url.trim()).filter(url => url.length > 0);
     }
   }
 

@@ -26,20 +26,20 @@ const TweetCard = React.forwardRef<HTMLDivElement, TweetCardProps>(
     ];
     
     let imageUrls: string[] = [];
-    if (typeof images === 'string' && images.trim() !== '' && images.startsWith('[') && images.endsWith(']')) {
+    if (typeof images === 'string' && images.trim() !== '') {
+      if (images.startsWith('[') && images.endsWith(']')) {
         try {
-            const parsed = JSON.parse(images);
-            if (Array.isArray(parsed)) {
-                imageUrls = parsed;
-            }
+          const parsed = JSON.parse(images);
+          if (Array.isArray(parsed)) {
+              imageUrls = parsed;
+          }
         } catch (e) {
-            // Not a JSON array, treat as single image if it's a valid URL string
-            if(!images.startsWith('[') && images.includes('https')) {
-                imageUrls = [images];
-            }
+          console.error("Failed to parse images JSON string in TweetCard:", e);
         }
-    } else if (typeof images === 'string' && images.trim() !== '' && !images.startsWith('[')) {
-        imageUrls = [images];
+      } else {
+        // Handle comma-separated strings
+        imageUrls = images.split(',').map(url => url.trim()).filter(url => url.length > 0);
+      }
     }
 
 

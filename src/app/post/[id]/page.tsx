@@ -17,6 +17,7 @@ import GlobalHeader from '@/components/global-header';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import QuoteCard from '@/components/quote-card';
+import MediaGrid from '@/components/media-grid';
 
 export default function PostPage() {
     const params = useParams();
@@ -81,6 +82,23 @@ export default function PostPage() {
 
     const { authorName, authorUserName, authorProfilePicture, createdAt, text, fullText, images, replyCount, retweetCount, likeCount, viewCount, bookmarkCount, suggestions, replied_status, quoteData, VideoPresent, VideoUrl } = tweet;
     
+    let imageUrls: string[] = [];
+    if (typeof images === 'string' && images.trim() !== '') {
+      if (images.startsWith('[') && images.endsWith(']')) {
+        try {
+          const parsed = JSON.parse(images);
+          if (Array.isArray(parsed)) {
+              imageUrls = parsed;
+          }
+        } catch (e) {
+          console.error("Failed to parse images JSON string in PostPage:", e);
+        }
+      } else {
+        // Handle comma-separated strings
+        imageUrls = images.split(',').map(url => url.trim()).filter(url => url.length > 0);
+      }
+    }
+
     return (
         <div className="min-h-screen bg-background text-foreground">
             <GlobalHeader />
@@ -119,15 +137,9 @@ export default function PostPage() {
                                 </div>
                             )}
 
-                            {!VideoPresent && images && images !== " " && (
-                                <div className="mt-3 relative max-h-[510px] w-full rounded-2xl overflow-hidden border border-border">
-                                    <Image
-                                        src={images}
-                                        alt="Tweet image"
-                                        fill
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        className="!relative object-contain w-full h-auto"
-                                    />
+                            {!VideoPresent && imageUrls.length > 0 && (
+                                <div className="mt-3 overflow-hidden rounded-2xl border border-border">
+                                    <MediaGrid images={imageUrls} />
                                 </div>
                             )}
 
