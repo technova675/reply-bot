@@ -14,7 +14,15 @@ type FeedProps = {
 export default function Feed({ tweets, filter, setFilter }: FeedProps) {
   const handleTweetClick = (tweet: Tweet) => {
     if (tweet && tweet.id) {
+      // Save the tweet data for the post page to use
       sessionStorage.setItem(`tweet:${tweet.id}`, JSON.stringify(tweet));
+      
+      // Save scroll position and post ID for restoring the feed
+      const feedState = {
+        scrollY: window.scrollY,
+        postId: tweet.id,
+      };
+      sessionStorage.setItem('feedState', JSON.stringify(feedState));
     }
   };
 
@@ -25,6 +33,7 @@ export default function Feed({ tweets, filter, setFilter }: FeedProps) {
         {tweets.map((tweet, index) => (
           <Link
             key={tweet.id}
+            id={`tweet-${tweet.id}`}
             href={`/post/${tweet.id}`}
             onClick={() => handleTweetClick(tweet)}
             className="w-full max-w-[720px] block"
