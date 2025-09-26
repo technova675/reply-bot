@@ -29,7 +29,7 @@ export default function MediaGrid({ images, isLCP = false }: MediaGridProps) {
 
   if (imageCount === 1) {
     return (
-      <div className="relative max-h-[510px] w-full">
+      <div className="relative max-h-[900px] w-full">
          <Image
             src={images[0]}
             alt="Tweet image"

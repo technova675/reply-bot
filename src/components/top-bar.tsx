@@ -4,10 +4,8 @@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MoreHorizontal, Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { MoreHorizontal } from 'lucide-react';
 import type { UserProfile as UserProfileType } from '@/lib/types';
-import { getUserProfile } from '@/lib/data';
 
 type TopBarProps = {
   filter: string;
@@ -15,45 +13,11 @@ type TopBarProps = {
 };
 
 const UserProfile = () => {
-  const [user, setUser] = useState<UserProfileType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      setIsLoading(true);
-      const fetchedUser = await getUserProfile();
-      setUser(fetchedUser);
-      setIsLoading(false);
-    };
-    fetchUser();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-3 h-[68px]">
-        <Loader2 className="animate-spin text-muted-foreground" size={20} />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-        <div className="flex items-center justify-between w-full hover:bg-muted/50 p-3 rounded-full cursor-pointer transition-colors duration-200">
-            <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                    <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-                <div className="hidden xl:block">
-                    <p className="font-bold text-sm">Anonymous</p>
-                    <p className="text-muted-foreground text-sm">@user</p>
-                </div>
-            </div>
-            <div className="hidden xl:block">
-                <MoreHorizontal size={20} className="text-muted-foreground" />
-            </div>
-        </div>
-    );
-  }
+  const user: UserProfileType = {
+    name: "Vir",
+    handle: "Thevirofficial",
+    avatar: "https://pbs.twimg.com/profile_images/1742863381219209216/Nv4QQ_M0_400x400.jpg"
+  };
 
   return (
       <div className="flex items-center justify-between w-full hover:bg-muted/50 p-3 rounded-full cursor-pointer transition-colors duration-200">

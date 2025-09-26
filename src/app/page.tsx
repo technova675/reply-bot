@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import type { Tweet } from '@/lib/types';
-import { getTweets, getQuotes } from '@/lib/data';
+import { getTweets } from '@/lib/data';
 import Sidebar from '@/components/sidebar';
 import Feed from '@/components/feed';
 import DebugDrawer from '@/components/debug-drawer';
@@ -66,16 +66,16 @@ export default function Home() {
       let fetchedTweets = getCachedTweets();
       if (fetchedTweets.length === 0) {
         console.log("Cache empty, fetching from network...");
-        const [tweetsData, quotesData] = await Promise.all([getTweets(), getQuotes()]);
-        for (let t of tweetsData) {
-          let quoteData: any[] = [];
-          if (t.isQuote === true) {
-            quoteData = quotesData.filter(q => q.conversationId === t.conversationId);
-            t.quoteData = quoteData;
-          } else {
-            t.quoteData = quoteData;
-          }
-        }
+        const [tweetsData] = await Promise.all([getTweets()]);
+        // for (let t of tweetsData) {
+        //   let quoteData: any[] = [];
+        //   if (t.isQuote === true) {
+        //     quoteData = quotesData.filter(q => q.conversationId === t.conversationId);
+        //     t.quoteData = quoteData;
+        //   } else {
+        //     t.quoteData = quoteData;
+        //   }
+        // }
         fetchedTweets = tweetsData;
         setCachedTweets(fetchedTweets);
       } else {

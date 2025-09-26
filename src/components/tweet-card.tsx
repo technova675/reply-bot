@@ -81,13 +81,13 @@ const TweetCard = React.forwardRef<HTMLDivElement, TweetCardProps>(
                   <MediaGrid images={imageUrls} isLCP={isLCP} />
                 </div>
               )}
-
+{/* 
               {quoteData && quoteData.length > 0 && (
                 <div className="mt-3">
                   <QuoteCard quote={quoteData[0]} />
                 </div>
               )}
-             
+              */}
               <div className="flex justify-between items-center mt-4 max-w-md text-muted-foreground">
                 {actionItems.map((item, index) => (
                   <div key={index} className={`flex items-center gap-2 text-sm transition-colors duration-200 ${item.color}`}>
