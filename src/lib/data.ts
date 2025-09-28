@@ -1,7 +1,7 @@
 import type { Reply, Tweet, UserProfile } from './types';
 
-const TWEET_LIST_URL = 'https://krishnavir.app.n8n.cloud/webhook-test/0a587209-3bfa-4bfb-aa41-6187541931d4';
-const TWEET_REPLY_URL = "https://krishnavir.app.n8n.cloud/webhook-test/ff70f5fb-a2cb-4103-814e-314a515c4d88";
+const TWEET_LIST_URL = 'https://krishnavir.app.n8n.cloud/webhook/0a587209-3bfa-4bfb-aa41-6187541931d4';
+const TWEET_REPLY_URL = "https://krishnavir.app.n8n.cloud/webhook/ff70f5fb-a2cb-4103-814e-314a515c4d88";
 // const QUOTES_URL = "https://krishnavir.app.n8n.cloud/webhook-test/d08bcddb-eb90-405d-ac05-491ce7035bc6";
 
 /**
