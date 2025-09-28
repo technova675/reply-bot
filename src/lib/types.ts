@@ -87,7 +87,9 @@ export type ReplySuggestion = {
 };
 
 export type UserProfile = {
+  id: number;
   name: string;
   handle: string;
   avatar: string;
+  countryFlag?: string;
 };

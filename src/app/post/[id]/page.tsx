@@ -18,10 +18,12 @@ import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import QuoteCard from '@/components/quote-card';
 import MediaGrid from '@/components/media-grid';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function PostPage() {
     const params = useParams();
     const id = params.id as string;
+    const { loggedInUser } = useAuth();
     const [tweet, setTweet] = useState<Tweet | null | undefined>(undefined);
     const [replies, setReplies] = useState<Reply[]>([]);
     const [isLoadingReplies, setIsLoadingReplies] = useState(true);
@@ -40,7 +42,7 @@ export default function PostPage() {
                 // Now that we have the tweet, fetch its replies
                 try {
                     setIsLoadingReplies(true);
-                    const fetchedReplies = await getTweetRepliesById(id);
+                    const fetchedReplies = await getTweetRepliesById(id, loggedInUser?.name);
                     setReplies(fetchedReplies || []);
                 } catch (error) {
                     console.error("Failed to fetch replies:", error);
@@ -57,8 +59,20 @@ export default function PostPage() {
             }
         };
 
-        fetchTweetAndReplies();
-    }, [id]);
+        if (loggedInUser) {
+            fetchTweetAndReplies();
+        }
+    }, [id, loggedInUser]);
+
+    useEffect(() => {
+      const handleBeforeUnload = () => {
+        sessionStorage.setItem('isNavigatingBack', 'true');
+      };
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }, []);
 
     if (tweet === undefined) {
         return (
@@ -105,7 +119,7 @@ export default function PostPage() {
             <div className="container mx-auto flex justify-center gap-8 px-4">
                 <main className="w-full max-w-[720px]">
                     <header className="flex items-center gap-4 h-[53px] sticky top-0 bg-background/80 backdrop-blur-sm border-b border-border -mx-4 px-4">
-                        <Link href="/" className="text-primary hover:bg-muted p-2 rounded-full -ml-2">
+                        <Link href="/feed" className="text-primary hover:bg-muted p-2 rounded-full -ml-2">
                             <ArrowLeft size={20} />
                         </Link>
                         <h2 className="font-bold text-xl font-headline">Post</h2>
@@ -208,9 +222,9 @@ export default function PostPage() {
                       )}
                     </div>
                 </main>
-                 {replied_status === 'PENDING' && (
+                 {replied_status === 'PENDING' && loggedInUser && (
                     <aside className="hidden lg:block w-[420px] xl:w-[480px] flex-shrink-0 pt-4">
-                        <ReplySuggestions postId={id} />
+                        <ReplySuggestions postId={id} userName={loggedInUser.name} />
                     </aside>
                 )}
             </div>

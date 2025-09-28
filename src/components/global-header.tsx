@@ -1,4 +1,4 @@
-// Add Twitter Handle modal – demo only
+
 "use client";
 
 import Link from 'next/link';
@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from "@/hooks/use-toast";
 import { saveHandle } from '@/lib/actions';
+import { useRouter } from 'next/navigation';
 
 
 const ChirpIcon = () => (
@@ -88,13 +89,26 @@ function AddHandleModal() {
 
 
 export default function GlobalHeader() {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('loggedInUserHandle');
+    sessionStorage.removeItem('tweet_cache');
+    sessionStorage.removeItem('feedState');
+    sessionStorage.removeItem('isNavigatingBack');
+    router.push('/');
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur-sm">
       <div className="container flex h-14 items-center">
         <div className="mr-4 flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
+          <Link href="/feed" className="mr-6 flex items-center space-x-2">
             <ChirpIcon />
           </Link>
+        </div>
+        <div className="flex flex-1 items-center justify-end space-x-4">
+            <Button variant="outline" onClick={handleLogout}>Logout</Button>
         </div>
       </div>
     </header>

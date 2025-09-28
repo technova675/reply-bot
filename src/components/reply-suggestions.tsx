@@ -177,17 +177,19 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId }: Suggestion
 
 type ReplySuggestionsProps = {
   postId: string;
+  userName: string;
 };
 
 
-export default function ReplySuggestions({ postId }: ReplySuggestionsProps) {
+export default function ReplySuggestions({ postId, userName }: ReplySuggestionsProps) {
   const [suggestions, setSuggestions] = useState<ReplySuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchSuggestions = useCallback(async () => {
+    if (!userName) return;
     setIsLoading(true);
     try {
-        const newSuggestions = await getSuggestions(postId);
+        const newSuggestions = await getSuggestions(postId, userName);
         setSuggestions(newSuggestions);
     } catch (error) {
         console.error("Failed to fetch suggestions:", error);
@@ -195,7 +197,7 @@ export default function ReplySuggestions({ postId }: ReplySuggestionsProps) {
     } finally {
         setIsLoading(false);
     }
-  }, [postId]);
+  }, [postId, userName]);
   
   useEffect(() => {
     fetchSuggestions();

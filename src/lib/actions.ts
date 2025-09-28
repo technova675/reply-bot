@@ -9,7 +9,7 @@ import type { ReplySuggestion } from './types';
 // or scalable practice for production apps.
 
 export async function saveHandle(handle: string) {
-  const webhookUrl = 'https://krishnavir.app.n8n.cloud/webhook/3cc6245e-1f14-4b44-a5f9-dc35aa017169';
+  const webhookUrl = 'https://krishnavir.app.n8n.cloud/webhook-test/3cc6245e-1f14-4b44-a5f9-dc35aa017169';
 
   try {
     const response = await fetch(webhookUrl, {
@@ -41,15 +41,15 @@ export async function saveHandle(handle: string) {
  * Fetches new reply suggestions for a given post ID from the n8n workflow.
  * @param postId The ID of the post to get suggestions for.
  */
-export async function getSuggestions(postId: string): Promise<ReplySuggestion[]> {
-  const url = 'https://krishnavir.app.n8n.cloud/webhook/64313aa3-aee7-4c42-be5f-f19f796a3601';
+export async function getSuggestions(postId: string, userName: string): Promise<ReplySuggestion[]> {
+  const url = 'https://krishnavir.app.n8n.cloud/webhook-test/64313aa3-aee7-4c42-be5f-f19f796a3601';
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: postId }),
+      body: JSON.stringify({ id: postId, userName: userName }),
       cache: 'no-store', 
     });
 

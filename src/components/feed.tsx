@@ -1,17 +1,17 @@
+
 "use client";
 
 import type { Tweet } from '@/lib/types';
 import TweetCard from './tweet-card';
 import Link from 'next/link';
-import TopBar from './top-bar';
 
 type FeedProps = {
   tweets: Tweet[];
-  filter: string;
-  setFilter: (filter: string) => void;
 };
 
-export default function Feed({ tweets, filter, setFilter }: FeedProps) {
+console.log(sessionStorage)
+
+export default function Feed({ tweets }: FeedProps) {
   const handleTweetClick = (tweet: Tweet) => {
     if (tweet && tweet.id) {
       // Save the tweet data for the post page to use
@@ -23,12 +23,14 @@ export default function Feed({ tweets, filter, setFilter }: FeedProps) {
         postId: tweet.id,
       };
       sessionStorage.setItem('feedState', JSON.stringify(feedState));
+
+      // Set a flag to indicate we are navigating away from the feed
+      sessionStorage.setItem('isNavigatingBack', 'true');
     }
   };
 
   return (
     <section>
-      <TopBar filter={filter} setFilter={setFilter} />
       <div className="flex flex-col items-center">
         {tweets.map((tweet, index) => (
           <Link
