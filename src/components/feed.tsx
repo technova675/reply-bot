@@ -9,8 +9,6 @@ type FeedProps = {
   tweets: Tweet[];
 };
 
-console.log(sessionStorage)
-
 export default function Feed({ tweets }: FeedProps) {
   const handleTweetClick = (tweet: Tweet) => {
     if (tweet && tweet.id) {
@@ -24,7 +22,8 @@ export default function Feed({ tweets }: FeedProps) {
       };
       sessionStorage.setItem('feedState', JSON.stringify(feedState));
 
-      // Set a flag to indicate we are navigating away from the feed
+      // Set a flag to indicate we are navigating away from the feed,
+      // which signals the feed page to load from cache on return.
       sessionStorage.setItem('isNavigatingBack', 'true');
     }
   };

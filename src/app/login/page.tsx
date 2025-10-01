@@ -6,7 +6,6 @@ import { users } from '@/lib/users';
 import type { UserProfile } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import GlobalHeader from '@/components/global-header';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,7 +17,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <GlobalHeader />
       <main className="container mx-auto flex flex-col items-center justify-center pt-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold font-headline mb-2">Welcome to ChirpFeed</h1>

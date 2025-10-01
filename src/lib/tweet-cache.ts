@@ -8,7 +8,10 @@ const CACHE_KEY = 'tweet_cache';
 export function setCachedTweets(tweets: Tweet[]) {
     if (typeof window !== 'undefined') {
         try {
-            sessionStorage.setItem(CACHE_KEY, JSON.stringify(tweets));
+            // Ensure tweets is an array before stringifying
+            if (Array.isArray(tweets)) {
+                sessionStorage.setItem(CACHE_KEY, JSON.stringify(tweets));
+            }
         } catch (e) {
             console.error("Failed to save tweets to sessionStorage", e);
         }

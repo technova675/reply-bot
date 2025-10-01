@@ -2,22 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from "@/hooks/use-toast";
-import { saveHandle } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 
 
@@ -28,64 +13,6 @@ const ChirpIcon = () => (
         </g>
     </svg>
 );
-
-
-function AddHandleModal() {
-  const { toast } = useToast();
-  const [open, setOpen] = useState(false);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const handle = formData.get('handle') as string;
-
-    if (handle) {
-      // TODO: wire to backend
-      await saveHandle(handle);
-      toast({
-        description: "Handle saved!",
-        duration: 3000,
-      });
-      setOpen(false); // Close modal on save
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Add Twitter Handle</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Add Twitter Handle</DialogTitle>
-            <DialogDescription>
-              Enter your Twitter handle to link your account. This is a demo.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="handle" className="text-right">
-                Handle
-              </Label>
-              <Input
-                id="handle"
-                name="handle"
-                className="col-span-3"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancel</Button>
-            </DialogClose>
-            <Button type="submit">Save</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 
 export default function GlobalHeader() {

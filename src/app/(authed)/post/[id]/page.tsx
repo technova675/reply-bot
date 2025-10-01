@@ -1,5 +1,4 @@
 
-
 'use client'
 
 import { getTweetRepliesById } from '@/lib/data';
@@ -13,7 +12,6 @@ import { MessageCircle, Repeat2, Heart, Upload, ArrowLeft, Bookmark } from 'luci
 import { Separator } from '@/components/ui/separator';
 import ReplyCard from '@/components/reply-card';
 import ReplySuggestions from '@/components/reply-suggestions';
-import GlobalHeader from '@/components/global-header';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import QuoteCard from '@/components/quote-card';
@@ -77,7 +75,6 @@ export default function PostPage() {
     if (tweet === undefined) {
         return (
              <div className="min-h-screen bg-background text-foreground">
-                <GlobalHeader />
                  <div className="container mx-auto flex justify-center px-4">
                     <main className="w-full max-w-[720px]">
                         <div className="flex justify-center items-center h-screen">
@@ -114,10 +111,9 @@ export default function PostPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            <GlobalHeader />
-            <div className="container mx-auto flex justify-center gap-8 px-4">
-                <main className="w-full max-w-[720px]">
+        <div className="min-h-screen bg-background text-foreground flex justify-center">
+            <div className="w-full flex justify-center gap-8">
+                <div className="w-full max-w-[720px]">
                     <header className="flex items-center gap-4 h-[53px] sticky top-0 bg-background/80 backdrop-blur-sm border-b border-border -mx-4 px-4">
                         <Link href="/feed" className="text-primary hover:bg-muted p-2 rounded-full -ml-2">
                             <ArrowLeft size={20} />
@@ -221,7 +217,7 @@ export default function PostPage() {
                           </div>
                       )}
                     </div>
-                </main>
+                </div>
                  {replied_status === 'PENDING' && loggedInUser && (
                     <aside className="hidden lg:block w-[420px] xl:w-[480px] flex-shrink-0 pt-4">
                         <ReplySuggestions postId={id} userName={loggedInUser.name} />

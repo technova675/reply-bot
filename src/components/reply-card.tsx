@@ -33,7 +33,7 @@ export default function ReplyCard({ reply }: ReplyCardProps) {
     { icon: MessageCircle, value: replyCount, color: 'hover:text-primary' },
     { icon: Repeat2, value: 0, color: 'hover:text-green-500' }, // retweetCount is not in the new object
     { icon: Heart, value: likeCount, color: 'hover:text-red-500' },
-    { icon: BarChart2, value: viewCount, color: 'hovertext-primary' },
+    { icon: BarChart2, value: viewCount, color: 'hover:text-primary' },
   ];
   
   // Media can be a single URL string.
