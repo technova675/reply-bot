@@ -1,8 +1,3 @@
-
-
-
-
-
 export type Author = {
   name: string;
   userName: string;
@@ -84,23 +79,26 @@ export type Tweet = {
 };
 
 export type Job = {
+  row_number?: number;
   id: string;
-  createdAt: string;
+  url: string;
   text: string;
-  images: string;
-  replyCount: number;
   retweetCount: number;
+  replyCount: number;
   likeCount: number;
+  quoteCount: number;
   viewCount: number;
   bookmarkCount: number;
-  authorName: string;
-  authorUserName: string;
-  authorProfilePicture: string;
-  authorId: string;
-  authorIsBlueVerified?: boolean;
-  url: string;
+  createdAt: string;
   isReply: boolean;
-  conversationId?: string;
+  canDm?: boolean;
+  conversationId: string;
+  authorUserName: string;
+  authorId: string;
+  authorName: string;
+  authorIsBlueVerified?: boolean;
+  authorProfilePicture: string;
+  images: string;
   VideoUrl?: string;
   VideoPresent?: boolean;
   applied_status: 'PENDING' | 'APPLIED';
@@ -117,4 +115,3 @@ export type UserProfile = {
   avatar: string;
   countryFlag?: string;
 };
- 

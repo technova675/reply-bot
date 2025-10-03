@@ -36,6 +36,17 @@ const XLogo = () => (
     </svg>
 );
 
+const TelegramIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className="w-full h-full"
+  >
+    <path d="M21.8,4.3C21.3,4,20.7,4,20.2,4.3L3,11.3c-0.6,0.2-1,0.9-1,1.5c0,0.7,0.4,1.3,1,1.5l4.3,1.5l1.5,4.3c0.2,0.6,0.9,1,1.5,1c0.1,0,0.2,0,0.2,0c0.6-0.1,1.2-0.5,1.4-1.2L22,4.9C22.1,4.7,22,4.5,21.8,4.3z M18.5,7.3l-7.2,4.5c-0.1,0.1-0.2,0-0.2-0.1l-0.5-2.2L18.5,7.3z"></path>
+  </svg>
+);
+
 
 const NavItem = ({ href, icon: Icon, text, active = false }: { href: string, icon: React.ElementType, text: string, active?: boolean }) => (
     <Link href={href} passHref>
@@ -117,21 +128,18 @@ const UserProfileSwitcher = ({ users, selectedUser, setSelectedUser }: { users: 
 
 
 export default function Sidebar({ users, selectedUser, setSelectedUser, pageTitle }: { users: UserProfileType[], selectedUser: UserProfileType | null, setSelectedUser: (user: UserProfileType) => void, pageTitle: string }) {
-  const navItems = [
+  const baseNavItems = [
     { href: '/feed', icon: Home, text: 'Home' },
-    // { href: '#', icon: Search, text: 'Explore' },
-    // { href: '#', icon: Bell, text: 'Notifications' },
-    // { href: '#', icon: Mail, text: 'Messages' },
-    // { href: '#', icon: Sparkles, text: 'Grok' },
-    // { href: '#', icon: List, text: 'Lists' },
-    // { href: '#', icon: Bookmark, text: 'Bookmarks' },
-    // { href: '#', icon: Users, text: 'Communities' },
-    // { href: '#', icon: XLogo, text: 'Premium' },
-    // { href: '#', icon: Zap, text: 'Verified Orgs' },
-    { href: '/jobs', icon: Briefcase, text: 'Jobs' },
-    // { href: '#', icon: User, text: 'Profile' },
-    // { href: '#', icon: MoreHorizontal, text: 'More' },
   ];
+
+  const jobsNavItem = { href: '/jobs', icon: Briefcase, text: 'Jobs' };
+  const telejobsNavItem = { href: '/telejobs', icon: TelegramIcon, text: 'Telegram Jobs' };
+
+  const navItems =
+    selectedUser?.name.toLowerCase() === 'sim'
+      ? [...baseNavItems, jobsNavItem, telejobsNavItem]
+      : baseNavItems;
+
 
   return (
     <header className="hidden sm:flex flex-col justify-between h-screen p-2 sticky top-0 w-64 items-start">
