@@ -1,3 +1,12 @@
+
+
+
+
+
+
+
+
+
 export type Author = {
   name: string;
   userName: string;
@@ -104,6 +113,21 @@ export type Job = {
   applied_status: 'PENDING' | 'APPLIED';
 };
 
+export type TelegramJob = {
+  row_number: number;
+  id: number;
+  date: string;
+  Job_Title: string;
+  Company_Name: string;
+  Job_Location: string;
+  Job_Salary: string;
+  Apply_link: string;
+  Application_Deadline?: string;
+  display_url?: string;
+  sender_id: number;
+};
+
+
 export type ReplySuggestion = {
     text: string;
 };
@@ -115,3 +139,5 @@ export type UserProfile = {
   avatar: string;
   countryFlag?: string;
 };
+ 
+

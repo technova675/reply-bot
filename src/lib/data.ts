@@ -1,8 +1,10 @@
-import type { Reply, Tweet, UserProfile, Job } from './types';
+
+import type { Reply, Tweet, UserProfile, Job, TelegramJob } from './types';
 
 const TWEET_LIST_URL = 'https://krishnavir.app.n8n.cloud/webhook/0a587209-3bfa-4bfb-aa41-6187541931d4';
 const TWEET_REPLY_URL = "https://krishnavir.app.n8n.cloud/webhook/ff70f5fb-a2cb-4103-814e-314a515c4d88";
 const JOBS_LIST_URL = 'https://krishnavir.app.n8n.cloud/webhook/07021df9-8bf1-447f-8df1-f4a72a6f334f';
+const TELEGRAM_JOBS_URL = 'https://krishnavir.app.n8n.cloud/webhook/d39f0b0d-104a-45cd-b761-07afde39b497';
 // const QUOTES_URL = "https://krishnavir.app.n8n.cloud/webhook-test/d08bcddb-eb90-405d-ac05-491ce7035bc6";
 
 /**
@@ -43,6 +45,24 @@ export async function getJobs(): Promise<Job[]> {
     return data as Job[];
   } catch (error) {
     console.error('An error occurred while fetching jobs:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetches Telegram job listings from the n8n workflow.
+ */
+export async function getTelegramJobs(): Promise<TelegramJob[]> {
+  try {
+    const response = await fetch(TELEGRAM_JOBS_URL, { cache: 'no-store' });
+    if (!response.ok) {
+      console.error('Failed to fetch Telegram jobs from n8n workflow. Status:', response.status);
+      return [];
+    }
+    const data = await response.json();
+    return data as TelegramJob[];
+  } catch (error) {
+    console.error('An error occurred while fetching Telegram jobs:', error);
     return [];
   }
 }

@@ -48,6 +48,7 @@ export default function AuthedLayout({ children }: { children: React.ReactNode }
 
   const getPageTitle = (path: string) => {
     if (path.startsWith('/jobs')) return 'Jobs';
+    if (path.startsWith('/telejobs')) return 'Telegram Jobs';
     if (path.startsWith('/feed')) return 'Home';
     if (path.startsWith('/post')) return 'Post';
     return 'Home';
