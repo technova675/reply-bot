@@ -4,28 +4,11 @@
 import Link from 'next/link';
 import {
   Home,
-  Search,
-  Bell,
-  Mail,
-  List,
-  Bookmark,
-  Users,
-  User,
-  MoreHorizontal,
   Briefcase,
-  Sparkles,
-  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserProfile as UserProfileType } from '@/lib/types';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const XLogo = () => (
@@ -64,65 +47,27 @@ const NavItem = ({ href, icon: Icon, text, active = false }: { href: string, ico
     </Link>
 );
 
-const UserProfileSwitcher = ({ users, selectedUser, setSelectedUser }: { users: UserProfileType[], selectedUser: UserProfileType | null, setSelectedUser: (user: UserProfileType) => void}) => {
-    
+const UserProfileDisplay = ({ selectedUser }: { selectedUser: UserProfileType | null }) => {
   if (!selectedUser) return null;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center justify-between w-full hover:bg-muted/50 p-3 rounded-full cursor-pointer transition-colors duration-200 h-auto">
-            <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                    <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
-                    <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="text-left">
-                    <p className="font-bold text-sm flex items-center gap-1">
-                      {selectedUser.name}
-                      {selectedUser.countryFlag && (
-                        <img src={selectedUser.countryFlag} alt="country flag" className="w-4 h-4" />
-                      )}
-                    </p>
-                    <p className="text-muted-foreground text-sm">@{selectedUser.handle}</p>
-                </div>
+    <div className="flex items-center justify-between w-full p-3 rounded-full">
+        <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+                <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
+                <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="text-left">
+                <p className="font-bold text-sm flex items-center gap-1">
+                  {selectedUser.name}
+                  {selectedUser.countryFlag && (
+                    <img src={selectedUser.countryFlag} alt="country flag" className="w-4 h-4" />
+                  )}
+                </p>
+                <p className="text-muted-foreground text-sm">@{selectedUser.handle}</p>
             </div>
-            <div>
-                <MoreHorizontal size={20} className="text-muted-foreground" />
-            </div>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64" align="start" side="right">
-        <DropdownMenuItem disabled>
-          <div className="font-bold">Add an existing account</div>
-        </DropdownMenuItem>
-        {users.map((user) => (
-          <DropdownMenuItem key={user.handle} onSelect={() => setSelectedUser(user)} disabled={selectedUser.handle === user.handle}>
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-bold text-sm flex items-center gap-1">
-                    {user.name}
-                    {user.countryFlag && (
-                      <img src={user.countryFlag} alt="country flag" className="w-4 h-4" />
-                    )}
-                  </p>
-                  <p className="text-muted-foreground text-sm">@{user.handle}</p>
-                </div>
-              </div>
-              {selectedUser.handle === user.handle && <Check className="h-4 w-4" />}
-            </div>
-          </DropdownMenuItem>
-        ))}
-         <DropdownMenuItem disabled>
-          <div className="font-bold">Log out @{selectedUser.handle}</div>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </div>
+    </div>
   );
 };
 
@@ -156,14 +101,11 @@ export default function Sidebar({ users, selectedUser, setSelectedUser, pageTitl
              />
             ))}
          </nav>
-         {/* <Button className="rounded-full w-full h-auto py-3 text-lg mt-4 bg-primary text-primary-foreground">
-          Post
-         </Button> */}
       </div>
 
       <div className="mb-4 w-full">
         {selectedUser && (
-           <UserProfileSwitcher users={users} selectedUser={selectedUser} setSelectedUser={setSelectedUser} />
+           <UserProfileDisplay selectedUser={selectedUser} />
         )}
       </div>
     </header>

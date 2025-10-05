@@ -48,7 +48,7 @@ const TweetCard = React.forwardRef<HTMLDivElement, TweetCardProps>(
           <div className="flex gap-4">
             <Avatar className="w-12 h-12">
               <AvatarImage src={authorProfilePicture} alt={`${authorName}'s avatar`} />
-              <AvatarFallback>{authorName.charAt(0)}</AvatarFallback>
+              {/* <AvatarFallback>{authorName ? authorName.charAt(0) : ''}</AvatarFallback> */}
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center gap-1 text-sm">

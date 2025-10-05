@@ -139,5 +139,3 @@ export type UserProfile = {
   avatar: string;
   countryFlag?: string;
 };
- 
-

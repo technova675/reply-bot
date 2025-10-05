@@ -56,8 +56,8 @@ export default function AuthedLayout({ children }: { children: React.ReactNode }
 
   const pageTitle = getPageTitle(pathname);
 
-  // The Post page has its own specialized header, so we don't show the generic TopBar
-  const showTopBar = !pathname.startsWith('/post');
+  // Certain pages have their own TopBar implementation to handle complex state like filtering
+  const showGenericTopBar = !pathname.startsWith('/post') && !pathname.startsWith('/feed') && !pathname.startsWith('/jobs');
 
   return (
     <div className="bg-background text-foreground">
@@ -69,7 +69,7 @@ export default function AuthedLayout({ children }: { children: React.ReactNode }
           pageTitle={pageTitle}
         />
         <main className="flex-1 border-x border-border">
-          {showTopBar && <TopBar pageTitle={pageTitle} />}
+          {showGenericTopBar && <TopBar pageTitle={pageTitle} />}
           {children}
         </main>
       </div>
