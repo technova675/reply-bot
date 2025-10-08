@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, RotateCw, Pencil, Save } from 'lucide-react';
@@ -17,10 +18,11 @@ type SuggestionRowProps = {
   index: number;
   saveSuggestion: (payload: { index: number; text: string }) => Promise<{ ok: boolean; err?: string }>;
   postId: string;
+  userName: string;
 };
 
 
-function SuggestionRow({ suggestion, index, saveSuggestion, postId }: SuggestionRowProps) {
+function SuggestionRow({ suggestion, index, saveSuggestion, postId , userName}: SuggestionRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(suggestion.text);
@@ -28,6 +30,7 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId }: Suggestion
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const isLongText = suggestion.text.length > 100;
   const shouldClamp = isLongText && !isExpanded && !isEditing;
@@ -75,7 +78,7 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId }: Suggestion
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: editedText, postId: postId }),
+        body: JSON.stringify({ text: editedText, postId: postId, userName: userName }),
       });
 
       if (response.ok) {
@@ -83,6 +86,8 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId }: Suggestion
           description: "Suggestion sent!",
           duration: 2000,
         });
+        sessionStorage.removeItem('isNavigatingBack');
+        router.push('/feed');
       } else {
         toast({
           variant: "destructive",
@@ -241,7 +246,7 @@ export default function ReplySuggestions({ postId, userName }: ReplySuggestionsP
         ) : (
             suggestions && suggestions.length > 0 ? (
                 suggestions.map((suggestion, index) => (
-                    <SuggestionRow key={index} suggestion={suggestion} index={index} saveSuggestion={handleSaveSuggestion} postId={postId} />
+                    <SuggestionRow key={index} suggestion={suggestion} index={index} saveSuggestion={handleSaveSuggestion} postId={postId} userName={userName} />
                 ))
             ) : (
                 <div className="flex justify-center items-center h-full text-sm text-muted-foreground min-h-[240px]">
