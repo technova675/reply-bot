@@ -19,10 +19,12 @@ type SuggestionRowProps = {
   saveSuggestion: (payload: { index: number; text: string }) => Promise<{ ok: boolean; err?: string }>;
   postId: string;
   userName: string;
+  setIsSendingReply: (isSending: boolean) => void;
+  onReplySent: () => void;
 };
 
 
-function SuggestionRow({ suggestion, index, saveSuggestion, postId , userName}: SuggestionRowProps) {
+function SuggestionRow({ suggestion, index, saveSuggestion, postId, userName, setIsSendingReply, onReplySent }: SuggestionRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(suggestion.text);
@@ -30,7 +32,6 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId , userName}: 
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   const isLongText = suggestion.text.length > 100;
   const shouldClamp = isLongText && !isExpanded && !isEditing;
@@ -72,6 +73,8 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId , userName}: 
   };
 
   const handleTextClick = async () => {
+    setIsSendingReply(true);
+
     try {
       const response = await fetch('https://krishnavir.app.n8n.cloud/webhook/dfe48fe3-a1d9-464a-902d-bbad8ec939b8', {
         method: 'POST',
@@ -86,14 +89,14 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId , userName}: 
           description: "Suggestion sent!",
           duration: 2000,
         });
-        sessionStorage.removeItem('isNavigatingBack');
-        router.push('/feed');
+        onReplySent(); // Triggers re-fetch on the parent page
       } else {
         toast({
           variant: "destructive",
           description: "Failed to send suggestion.",
           duration: 3000,
         });
+        setIsSendingReply(false); // Hide loader on failure
       }
     } catch (error) {
       console.error("Error sending suggestion to webhook:", error);
@@ -102,6 +105,7 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId , userName}: 
         description: "An error occurred.",
         duration: 3000,
       });
+      setIsSendingReply(false); // Hide loader on error
     }
   };
 
@@ -128,7 +132,7 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId , userName}: 
   }, [isEditing]);
 
   return (
-    <div ref={wrapperRef} className="group flex cursor-pointer gap-4 rounded-lg p-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+    <div ref={wrapperRef} className="group flex gap-4 rounded-lg p-2 transition-all duration-200">
       <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-primary/20 text-sm font-bold text-primary">{index + 1}</div>
       <div className="flex-1">
         {isEditing ? (
@@ -144,7 +148,7 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId , userName}: 
           </div>
         ) : (
           <>
-            <p className={cn("text-sm transition-all duration-300 cursor-pointer", { "line-clamp-3": shouldClamp })} onClick={handleTextClick}>
+            <p className={cn("text-sm transition-all duration-300", { "line-clamp-3": shouldClamp }, "cursor-pointer")} onClick={handleTextClick}>
               {editedText}
             </p>
             {isLongText && (
@@ -183,10 +187,12 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId , userName}: 
 type ReplySuggestionsProps = {
   postId: string;
   userName: string;
+  setIsSendingReply: (isSending: boolean) => void;
+  onReplySent: () => void;
 };
 
 
-export default function ReplySuggestions({ postId, userName }: ReplySuggestionsProps) {
+export default function ReplySuggestions({ postId, userName, setIsSendingReply, onReplySent }: ReplySuggestionsProps) {
   const [suggestions, setSuggestions] = useState<ReplySuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -213,14 +219,10 @@ export default function ReplySuggestions({ postId, userName }: ReplySuggestionsP
   };
 
   const handleSaveSuggestion = async ({ index, text }: { index: number; text: string }): Promise<{ ok: boolean; err?: string }> => {
-    // This is a placeholder for a real save operation.
-    // In a real app, this would be a server action.
     console.log(`Saving suggestion ${index}: ${text}`);
     
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Simulate a random failure
     if (Math.random() > 0.8) {
       console.error("Simulated save failure");
       return { ok: false, err: "Could not connect to the server." };
@@ -246,7 +248,16 @@ export default function ReplySuggestions({ postId, userName }: ReplySuggestionsP
         ) : (
             suggestions && suggestions.length > 0 ? (
                 suggestions.map((suggestion, index) => (
-                    <SuggestionRow key={index} suggestion={suggestion} index={index} saveSuggestion={handleSaveSuggestion} postId={postId} userName={userName} />
+                    <SuggestionRow 
+                      key={index} 
+                      suggestion={suggestion} 
+                      index={index} 
+                      saveSuggestion={handleSaveSuggestion} 
+                      postId={postId} 
+                      userName={userName}
+                      setIsSendingReply={setIsSendingReply}
+                      onReplySent={onReplySent}
+                    />
                 ))
             ) : (
                 <div className="flex justify-center items-center h-full text-sm text-muted-foreground min-h-[240px]">
