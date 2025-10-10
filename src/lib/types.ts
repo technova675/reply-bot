@@ -7,6 +7,7 @@
 
 
 
+
 export type Author = {
   name: string;
   userName: string;
@@ -111,6 +112,12 @@ export type Job = {
   VideoUrl?: string;
   VideoPresent?: boolean;
   applied_status: 'PENDING' | 'APPLIED';
+  card_image?: string;
+  card_description?: string;
+  card_domain?: string;
+  card_found?: boolean;
+  card_title?: string;
+  card_url?: string;
 };
 
 export type TelegramJob = {
@@ -139,3 +146,5 @@ export type UserProfile = {
   avatar: string;
   countryFlag?: string;
 };
+ 
+

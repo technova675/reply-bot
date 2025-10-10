@@ -1,19 +1,46 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { BadgeCheck, Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat2, BarChart2 } from 'lucide-react';
 import type { Job } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn, formatNumber } from '@/lib/utils';
-import MediaGrid from './media-grid';
 import { format, formatDistanceToNowStrict } from 'date-fns';
-import { Separator } from './ui/separator';
 
 type JobCardProps = {
   job: Job;
 };
+
+const JobPreviewCard = ({ job }: { job: Job }) => {
+  if (!job.card_found || !job.card_image) {
+    return null;
+  }
+
+  return (
+    <a href={job.card_url} target="_blank" rel="noopener noreferrer" className="block mt-3 mb-3 overflow-hidden rounded-2xl border border-border hover:opacity-90 transition-opacity">
+      <div className="relative w-full aspect-[1.91/1]">
+        <Image
+          src={job.card_image}
+          alt={job.card_title || 'Job preview'}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
+        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+          <div className="bg-black/50 backdrop-blur-sm rounded-md p-2">
+            <h3 className="text-sm font-semibold text-white truncate">{job.card_title}</h3>
+            <p className="text-xs text-gray-300 truncate">{job.card_domain}</p>
+          </div>
+        </div>
+      </div>
+    </a>
+  );
+};
+
 
 export default function JobCard({ job }: JobCardProps) {
   const {
@@ -22,7 +49,6 @@ export default function JobCard({ job }: JobCardProps) {
     authorProfilePicture,
     authorIsBlueVerified,
     text,
-    images,
     replyCount,
     retweetCount,
     likeCount,
@@ -33,20 +59,17 @@ export default function JobCard({ job }: JobCardProps) {
     createdAt,
   } = job;
 
-  const [formattedTime, setFormattedTime] = useState('');
+  const [timeAgo, setTimeAgo] = useState('');
 
   useEffect(() => {
     if (createdAt) {
       try {
         const date = new Date(createdAt);
-        const absoluteTime = format(date, "h:mm a '·' MMM d, yyyy");
-        const relativeTime = formatDistanceToNowStrict(date, { addSuffix: true });
-        setFormattedTime(`${absoluteTime} (${relativeTime})`);
+        setTimeAgo(formatDistanceToNowStrict(date, { addSuffix: true }));
       } catch (error) {
         console.error("Error formatting date:", error);
-        // Fallback for potentially invalid date string
         const simpleDate = createdAt.split(' ').slice(0, 4).join(' ');
-        setFormattedTime(simpleDate);
+        setTimeAgo(simpleDate);
       }
     }
   }, [createdAt]);
@@ -55,21 +78,16 @@ export default function JobCard({ job }: JobCardProps) {
     { icon: MessageCircle, value: replyCount, color: 'hover:text-primary' },
     { icon: Repeat2, value: retweetCount, color: 'hover:text-green-500' },
     { icon: Heart, value: likeCount, color: 'hover:text-red-500' },
-    { icon: Bookmark, value: bookmarkCount, color: 'hover:text-primary' },
     { icon: BarChart2, value: viewCount, color: 'hover:text-primary' },
+    { icon: Bookmark, value: bookmarkCount, color: 'hover:text-primary' },
   ];
-
-  let imageUrls: string[] = [];
-  if (typeof images === 'string' && images.trim() !== '') {
-    imageUrls = images.split(',').map(url => url.trim()).filter(url => url.length > 0);
-  }
 
   return (
     <article className="flex flex-col p-4 border-b border-border">
       <div className="flex gap-4">
         <Avatar className="w-12 h-12">
           <AvatarImage src={authorProfilePicture} alt={`${authorName}'s avatar`} />
-          <AvatarFallback>{authorName.charAt(0)}</AvatarFallback>
+          <AvatarFallback>{authorName ? authorName.charAt(0) : '?'}</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <div className="flex justify-between items-start">
@@ -77,6 +95,8 @@ export default function JobCard({ job }: JobCardProps) {
               <span className="font-bold hover:underline">{authorName}</span>
               {authorIsBlueVerified && <BadgeCheck className="h-4 w-4 text-primary" />}
               <span className="text-muted-foreground ml-1">@{authorUserName}</span>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-muted-foreground hover:underline">{timeAgo}</span>
             </div>
              <Button variant="ghost" size="icon" className="text-muted-foreground -mt-2">
                 <MoreHorizontal size={20} />
@@ -84,14 +104,10 @@ export default function JobCard({ job }: JobCardProps) {
           </div>
 
           <p className="text-base whitespace-pre-wrap mb-3">{text}</p>
+          
+          <JobPreviewCard job={job} />
 
-          {imageUrls.length > 0 && (
-            <div className="mt-3 mb-3 overflow-hidden rounded-2xl border border-border">
-              <MediaGrid images={imageUrls} />
-            </div>
-          )}
-
-          <div className="flex justify-between items-center mt-2">
+          <div className="flex justify-between items-center mt-4">
             <div className="flex items-center gap-8 text-muted-foreground">
                 {actionItems.map((item, index) => (
                     <div key={index} className={`flex items-center gap-2 text-sm transition-colors duration-200 ${item.color}`}>
@@ -99,11 +115,6 @@ export default function JobCard({ job }: JobCardProps) {
                         {item.value > 0 && <span>{formatNumber(item.value)}</span>}
                     </div>
                 ))}
-                 {formattedTime && (
-            <div className="text-sm text-muted-foreground my-3">
-                <span>{formattedTime}</span>
-            </div>
-          )}
             </div>
             {canDm && (
               <Button 
