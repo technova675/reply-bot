@@ -136,6 +136,15 @@ export default function PostPage() {
       }
     }
 
+    const replySuggestionsComponent = replied_status === 'PENDING' && loggedInUser && (
+        <ReplySuggestions 
+            postId={id} 
+            userName={loggedInUser.name}
+            setIsSendingReply={setIsSendingReply}
+            onReplySent={handleReplySent}
+        />
+    );
+
     return (
         <>
             {isSendingReply && (
@@ -199,7 +208,7 @@ export default function PostPage() {
                                         <span>{formattedTime}</span> · <span className="font-bold text-foreground">{formatNumber(viewCount)}</span> Views
                                     </>
                                 ) : (
-                                    <span className="font-bold text-foreground">{formatNumber(viewCount)}</span>
+                                    viewCount > 0 && <span className="font-bold text-foreground">{formatNumber(viewCount)} Views</span>
                                 )}
                             </div>
 
@@ -231,6 +240,11 @@ export default function PostPage() {
                             <Separator className="my-2" />
                         </div>
 
+                        {/* Mobile reply suggestions - Placed right after the post */}
+                        <div className="lg:hidden p-4 border-b border-border -mx-4">
+                            {replySuggestionsComponent}
+                        </div>
+
                         <div className="relative -mx-4">
                           {replies.length > 0 && (
                             <div className="absolute left-10 top-0 h-full w-0.5 bg-border -z-10 -ml-px"></div>
@@ -245,22 +259,19 @@ export default function PostPage() {
                                   <ReplyCard key={reply.id} reply={reply} />
                               ))
                           ) : (
-                              <div className="text-center text-muted-foreground py-10">
-                                  <p>No replies yet.</p>
-                              </div>
+                              !replySuggestionsComponent && (
+                                <div className="text-center text-muted-foreground py-10">
+                                    <p>No replies yet.</p>
+                                </div>
+                              )
                           )}
                         </div>
+
                     </div>
-                     {replied_status === 'PENDING' && loggedInUser && (
-                        <aside className="hidden lg:block w-[420px] xl:w-[480px] flex-shrink-0 pt-4">
-                            <ReplySuggestions 
-                                postId={id} 
-                                userName={loggedInUser.name}
-                                setIsSendingReply={setIsSendingReply}
-                                onReplySent={handleReplySent}
-                            />
-                        </aside>
-                    )}
+                     {/* Desktop reply suggestions */}
+                    <aside className="hidden lg:block w-[420px] xl:w-[480px] flex-shrink-0 pt-4">
+                        {replySuggestionsComponent}
+                    </aside>
                 </div>
             </div>
         </>
