@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { ReplySuggestion } from './types';
@@ -11,6 +12,7 @@ import type { ReplySuggestion } from './types';
 /**
  * Fetches new reply suggestions for a given post ID from the n8n workflow.
  * @param postId The ID of the post to get suggestions for.
+ * @param userName The name of the user to get suggestions for.
  */
 export async function getSuggestions(postId: string, userName: string): Promise<ReplySuggestion[]> {
   const url = 'https://krishnavir.app.n8n.cloud/webhook/64313aa3-aee7-4c42-be5f-f19f796a3601';
@@ -35,15 +37,12 @@ export async function getSuggestions(postId: string, userName: string): Promise<
     }
 
     const data = JSON.parse(responseText);
-    
-    // The API might return an array with one object: `[{ "content": [...] }]`
-    if (Array.isArray(data) && data.length > 0 && data[0].content && Array.isArray(data[0].content)) {
-      return data[0].content.map((text: string) => ({ text }));
-    }
-    
-    // The API might return a direct object: `{ "content": [...] }`
-    if (data.content && Array.isArray(data.content)) {
-      return data.content.map((text: string) => ({ text }));
+
+    // The API returns an array of objects, where each object has a 'content' property which is an array of strings.
+    if (Array.isArray(data) && data.length > 0) {
+      return data.map(item => ({
+        content: item.content || [],
+      }));
     }
 
     console.log("SUGGESTION data format unexpected =>", data);

@@ -3,10 +3,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, RotateCw, Pencil, Save, Send } from 'lucide-react';
+import { Loader2, RotateCw, Pencil, Save, Send, History, ArrowRight } from 'lucide-react';
 import { getSuggestions } from '@/lib/actions'; 
 import type { ReplySuggestion } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
@@ -15,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type SuggestionRowProps = {
-  suggestion: { text: string };
+  suggestionText: string;
   index: number;
   saveSuggestion: (payload: { index: number; text: string }) => Promise<{ ok: boolean; err?: string }>;
   postId: string;
@@ -25,16 +24,16 @@ type SuggestionRowProps = {
 };
 
 
-function SuggestionRow({ suggestion, index, saveSuggestion, postId, userName, setIsSendingReply, onReplySent }: SuggestionRowProps) {
+function SuggestionRow({ suggestionText, index, saveSuggestion, postId, userName, setIsSendingReply, onReplySent }: SuggestionRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedText, setEditedText] = useState(suggestion.text);
+  const [editedText, setEditedText] = useState(suggestionText);
   const [saveError, setSaveError] = useState<string | null>(null);
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const isLongText = suggestion.text.length > 100;
+  const isLongText = suggestionText.length > 100;
   const shouldClamp = isLongText && !isExpanded && !isEditing;
 
   const handleEditClick = () => {
@@ -47,6 +46,11 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId, userName, se
       textareaRef.current?.select();
     }
   }, [isEditing]);
+  
+  useEffect(() => {
+    setEditedText(suggestionText);
+    setIsEditing(false);
+  }, [suggestionText]);
 
   const handleSaveClick = async () => {
     if (!editedText.trim()) {
@@ -69,9 +73,9 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId, userName, se
 
   const handleCancel = useCallback(() => {
     setIsEditing(false);
-    setEditedText(suggestion.text);
+    setEditedText(suggestionText);
     setSaveError(null);
-  }, [suggestion.text]);
+  }, [suggestionText]);
 
   const handleSendClick = async () => {
     setIsSendingReply(true);
@@ -225,7 +229,8 @@ type ReplySuggestionsProps = {
 
 
 export default function ReplySuggestions({ postId, userName, setIsSendingReply, onReplySent }: ReplySuggestionsProps) {
-  const [suggestions, setSuggestions] = useState<ReplySuggestion[]>([]);
+  const [suggestionHistory, setSuggestionHistory] = useState<ReplySuggestion[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchSuggestions = useCallback(async () => {
@@ -233,10 +238,11 @@ export default function ReplySuggestions({ postId, userName, setIsSendingReply, 
     setIsLoading(true);
     try {
         const newSuggestions = await getSuggestions(postId, userName);
-        setSuggestions(newSuggestions);
+        setSuggestionHistory(newSuggestions);
+        setCurrentIndex(0);
     } catch (error) {
         console.error("Failed to fetch suggestions:", error);
-        setSuggestions([]);
+        setSuggestionHistory([]);
     } finally {
         setIsLoading(false);
     }
@@ -250,6 +256,14 @@ export default function ReplySuggestions({ postId, userName, setIsSendingReply, 
      fetchSuggestions();
   };
 
+  const handlePrevious = () => {
+    setCurrentIndex(prevIndex => (prevIndex + 1) % suggestionHistory.length);
+  };
+
+  const handleNext = () => {
+    setCurrentIndex(prevIndex => (prevIndex > 0 ? prevIndex - 1 : 0));
+  };
+
   const handleSaveSuggestion = async ({ index, text }: { index: number; text: string }): Promise<{ ok: boolean; err?: string }> => {
     console.log(`Saving suggestion ${index}: ${text}`);
     
@@ -260,11 +274,21 @@ export default function ReplySuggestions({ postId, userName, setIsSendingReply, 
       return { ok: false, err: "Could not connect to the server." };
     }
 
-    setSuggestions(currentSuggestions => 
-      currentSuggestions.map((s, i) => i === index ? { ...s, text } : s)
-    );
+    setSuggestionHistory(currentHistory => {
+        const newHistory = [...currentHistory];
+        const currentBatch = newHistory[currentIndex];
+        if (currentBatch && currentBatch.content) {
+            const newContent = [...currentBatch.content];
+            newContent[index] = text;
+            newHistory[currentIndex] = { ...currentBatch, content: newContent };
+        }
+        return newHistory;
+    });
+
     return { ok: true };
   };
+
+  const currentSuggestions = suggestionHistory[currentIndex]?.content || [];
 
   return (
     <TooltipProvider>
@@ -279,11 +303,11 @@ export default function ReplySuggestions({ postId, userName, setIsSendingReply, 
                   <Loader2 className="animate-spin text-muted-foreground" size={24} />
               </div>
           ) : (
-              suggestions && suggestions.length > 0 ? (
-                  suggestions.map((suggestion, index) => (
+              currentSuggestions.length > 0 ? (
+                  currentSuggestions.map((suggestionText, index) => (
                       <SuggestionRow 
-                        key={index} 
-                        suggestion={suggestion} 
+                        key={`${currentIndex}-${index}`} 
+                        suggestionText={suggestionText} 
                         index={index} 
                         saveSuggestion={handleSaveSuggestion} 
                         postId={postId} 
@@ -300,11 +324,25 @@ export default function ReplySuggestions({ postId, userName, setIsSendingReply, 
           )}
         </CardContent>
         <CardFooter className="flex flex-col items-stretch gap-4">
-            <p className="text-xs text-muted-foreground text-center">Generated by AI • {suggestions?.length || 0} suggestions</p>
-            <Button onClick={handleRegenerate} disabled={isLoading}>
-              {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : <RotateCw size={16} className="mr-2" />}
-              Re-Generate
-            </Button>
+            <p className="text-xs text-muted-foreground text-center">Generated by AI • {currentSuggestions?.length || 0} suggestions</p>
+            <div className="flex gap-2">
+                {suggestionHistory.length >= 2 && (
+                    <Button onClick={handlePrevious} variant="outline" disabled={isLoading || currentIndex === suggestionHistory.length - 1}>
+                      <History size={16} className="mr-2" />
+                      Previous
+                    </Button>
+                )}
+                <Button onClick={handleRegenerate} disabled={isLoading} className="flex-grow">
+                  {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : <RotateCw size={16} className="mr-2" />}
+                  Re-Generate
+                </Button>
+                 {suggestionHistory.length >= 2 && (
+                    <Button onClick={handleNext} variant="outline" disabled={isLoading || currentIndex === 0}>
+                      Next
+                      <ArrowRight size={16} className="ml-2" />
+                    </Button>
+                )}
+            </div>
         </CardFooter>
       </Card>
     </TooltipProvider>

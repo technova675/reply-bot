@@ -136,8 +136,9 @@ export type TelegramJob = {
 
 
 export type ReplySuggestion = {
-    text: string;
+    content: string[];
 };
+
 
 export type UserProfile = {
   id: number;
