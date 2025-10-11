@@ -10,8 +10,13 @@ import { Loader2 } from 'lucide-react';
 import { setCachedTweets, getCachedTweets } from '@/lib/tweet-cache';
 import { useAuth } from '@/hooks/use-auth';
 import TopBar from '@/components/top-bar';
+import { format } from 'date-fns';
 
 type FilterType = 'All' | 'Replied' | 'Yet to Reply';
+
+type GroupedTweets = {
+  [date: string]: Tweet[];
+};
 
 export default function FeedPage() {
   const { loggedInUser, isLoading: isAuthLoading } = useAuth();
@@ -91,6 +96,22 @@ export default function FeedPage() {
     return tweets;
   }, [tweets, activeFilter]);
 
+  const groupedTweets = useMemo(() => {
+    return filteredTweets.reduce((acc: GroupedTweets, tweet) => {
+      if (!tweet.createdAt) return acc;
+      const tweetDate = new Date(tweet.createdAt);
+      const formattedDate = format(tweetDate, 'MMMM d, yyyy');
+      if (!acc[formattedDate]) {
+        acc[formattedDate] = [];
+      }
+      acc[formattedDate].push(tweet);
+      return acc;
+    }, {});
+  }, [filteredTweets]);
+
+  const sortedDates = useMemo(() => {
+    return Object.keys(groupedTweets).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  }, [groupedTweets]);
 
   if (isAuthLoading) {
     return (
@@ -118,8 +139,15 @@ export default function FeedPage() {
           <Loader2 className="animate-spin text-muted-foreground" size={24} />
           <p className="ml-2">Loading...</p>
         </div>
-      ) : filteredTweets.length > 0 ? (
-        <Feed tweets={filteredTweets} />
+      ) : sortedDates.length > 0 ? (
+        sortedDates.map(date => (
+          <div key={date}>
+            <div className="sticky top-[109px] z-10 bg-background/80 backdrop-blur-sm p-4 border-b border-t border-border">
+              <h2 className="font-bold text-lg">{date} <span className="text-muted-foreground font-normal text-base">({groupedTweets[date].length} posts)</span></h2>
+            </div>
+            <Feed tweets={groupedTweets[date]} />
+          </div>
+        ))
       ) : (
         <div className="text-center p-8 text-muted-foreground">
           No posts found for this filter.

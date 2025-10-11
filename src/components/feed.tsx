@@ -30,14 +30,14 @@ export default function Feed({ tweets }: FeedProps) {
 
   return (
     <section>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col">
         {tweets.map((tweet, index) => (
           <Link
             key={tweet.id}
             id={`tweet-${tweet.id}`}
             href={`/post/${tweet.id}`}
             onClick={() => handleTweetClick(tweet)}
-            className="w-full max-w-[720px] block"
+            className="w-full block"
           >
             <TweetCard tweet={tweet} isLCP={index === 0} />
           </Link>
