@@ -17,13 +17,13 @@ export function formatNumber(num: number): string {
 }
 
 export  function TweetTime(time: string):string {
-  const rawTime = time;
-
-  // Convert to Date object
-  const date = new Date(rawTime);
-
-  // Format like Twitter → "5:41 PM · Sep 19, 2025"
-  const formattedTime = format(date, "h:mm a '·' MMM d, yyyy");
-
-  return formattedTime
+  if (!time) return '';
+  try {
+    const date = new Date(time);
+    // Format like Twitter → "5:41 PM · Sep 19, 2025"
+    return format(date, "h:mm a · MMM d, yyyy");
+  } catch (error) {
+    console.error("Error formatting tweet time:", error);
+    return time; // fallback to original string
+  }
 }
