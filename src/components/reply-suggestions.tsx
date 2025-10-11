@@ -6,12 +6,13 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, RotateCw, Pencil, Save } from 'lucide-react';
+import { Loader2, RotateCw, Pencil, Save, Send } from 'lucide-react';
 import { getSuggestions } from '@/lib/actions'; 
 import type { ReplySuggestion } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type SuggestionRowProps = {
   suggestion: { text: string };
@@ -66,13 +67,13 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId, userName, se
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setIsEditing(false);
     setEditedText(suggestion.text);
     setSaveError(null);
-  };
+  }, [suggestion.text]);
 
-  const handleTextClick = async () => {
+  const handleSendClick = async () => {
     setIsSendingReply(true);
 
     try {
@@ -129,7 +130,7 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId, userName, se
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isEditing]);
+  }, [isEditing, handleCancel]);
 
   return (
     <div ref={wrapperRef} className="group flex gap-4 rounded-lg p-2 transition-all duration-200">
@@ -148,7 +149,7 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId, userName, se
           </div>
         ) : (
           <>
-            <p className={cn("text-sm transition-all duration-300", { "line-clamp-3": shouldClamp }, "cursor-pointer")} onClick={handleTextClick}>
+            <p className={cn("text-sm transition-all duration-300", { "line-clamp-3": shouldClamp })}>
               {editedText}
             </p>
             {isLongText && (
@@ -159,25 +160,56 @@ function SuggestionRow({ suggestion, index, saveSuggestion, postId, userName, se
           </>
         )}
       </div>
-      <div className="flex flex-col items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="flex flex-row items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
         {isEditing ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 cursor-pointer transition-transform duration-150 ease-in-out hover:-translate-y-0.5 focus:ring-2 focus:ring-ring"
-            aria-label={`Save suggestion ${index + 1}`}
-            onClick={handleSaveClick}>
-            <Save size={16} />
-          </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 cursor-pointer transition-transform duration-150 ease-in-out hover:-translate-y-0.5 focus:ring-2 focus:ring-ring"
+                    aria-label={`Save suggestion ${index + 1}`}
+                    onClick={handleSaveClick}>
+                    <Save size={16} />
+                  </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Save</p>
+              </TooltipContent>
+            </Tooltip>
         ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 cursor-pointer transition-transform duration-150 ease-in-out hover:-translate-y-0.5 focus:ring-2 focus:ring-ring"
-            aria-label={`Edit suggestion ${index + 1}`}
-            onClick={handleEditClick}>
-            <Pencil size={16} />
-          </Button>
+          <>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 cursor-pointer transition-transform duration-150 ease-in-out hover:-translate-y-0.5 focus:ring-2 focus:ring-ring"
+                  aria-label={`Send suggestion ${index + 1}`}
+                  onClick={handleSendClick}>
+                  <Send size={16} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Reply</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 cursor-pointer transition-transform duration-150 ease-in-out hover:-translate-y-0.5 focus:ring-2 focus:ring-ring"
+                  aria-label={`Edit suggestion ${index + 1}`}
+                  onClick={handleEditClick}>
+                  <Pencil size={16} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Edit</p>
+              </TooltipContent>
+            </Tooltip>
+          </>
         )}
       </div>
     </div>
@@ -235,44 +267,46 @@ export default function ReplySuggestions({ postId, userName, setIsSendingReply, 
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg font-bold font-headline">Reply Suggestions</CardTitle>
-        <CardDescription>AI-powered suggestions for your reply</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2 min-h-[240px]">
-        {isLoading ? (
-            <div className="flex justify-center items-center h-full min-h-[240px]">
-                <Loader2 className="animate-spin text-muted-foreground" size={24} />
-            </div>
-        ) : (
-            suggestions && suggestions.length > 0 ? (
-                suggestions.map((suggestion, index) => (
-                    <SuggestionRow 
-                      key={index} 
-                      suggestion={suggestion} 
-                      index={index} 
-                      saveSuggestion={handleSaveSuggestion} 
-                      postId={postId} 
-                      userName={userName}
-                      setIsSendingReply={setIsSendingReply}
-                      onReplySent={onReplySent}
-                    />
-                ))
-            ) : (
-                <div className="flex justify-center items-center h-full text-sm text-muted-foreground min-h-[240px]">
-                    No suggestions available.
-                </div>
-            )
-        )}
-      </CardContent>
-      <CardFooter className="flex flex-col items-stretch gap-4">
-          <p className="text-xs text-muted-foreground text-center">Generated by AI • {suggestions?.length || 0} suggestions</p>
-          <Button onClick={handleRegenerate} disabled={isLoading}>
-            {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : <RotateCw size={16} className="mr-2" />}
-            Re-Generate
-          </Button>
-      </CardFooter>
-    </Card>
+    <TooltipProvider>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-bold font-headline">Reply Suggestions</CardTitle>
+          <CardDescription>AI-powered suggestions for your reply</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2 min-h-[240px]">
+          {isLoading ? (
+              <div className="flex justify-center items-center h-full min-h-[240px]">
+                  <Loader2 className="animate-spin text-muted-foreground" size={24} />
+              </div>
+          ) : (
+              suggestions && suggestions.length > 0 ? (
+                  suggestions.map((suggestion, index) => (
+                      <SuggestionRow 
+                        key={index} 
+                        suggestion={suggestion} 
+                        index={index} 
+                        saveSuggestion={handleSaveSuggestion} 
+                        postId={postId} 
+                        userName={userName}
+                        setIsSendingReply={setIsSendingReply}
+                        onReplySent={onReplySent}
+                      />
+                  ))
+              ) : (
+                  <div className="flex justify-center items-center h-full text-sm text-muted-foreground min-h-[240px]">
+                      No suggestions available.
+                  </div>
+              )
+          )}
+        </CardContent>
+        <CardFooter className="flex flex-col items-stretch gap-4">
+            <p className="text-xs text-muted-foreground text-center">Generated by AI • {suggestions?.length || 0} suggestions</p>
+            <Button onClick={handleRegenerate} disabled={isLoading}>
+              {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : <RotateCw size={16} className="mr-2" />}
+              Re-Generate
+            </Button>
+        </CardFooter>
+      </Card>
+    </TooltipProvider>
   );
 }

@@ -8,35 +8,6 @@ import type { ReplySuggestion } from './types';
 // Writing to a local JSON file from a server action is not a standard
 // or scalable practice for production apps.
 
-export async function saveHandle(handle: string) {
-  const webhookUrl = 'https://krishnavir.app.n8n.cloud/webhook/3cc6245e-1f14-4b44-a5f9-dc35aa017169';
-
-  try {
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ handle }),
-    });
-
-    if (!response.ok) {
-      // Handle non-successful responses
-      const errorText = await response.text();
-      console.error(`Webhook call failed with status: ${response.status}`, errorText);
-      // We can return a more specific error to the client if needed
-      return { success: false, error: `Webhook failed: ${response.statusText}` };
-    }
-    
-    console.log(`[Server Action] Handle successfully sent to n8n webhook: ${handle}`);
-    return { success: true };
-
-  } catch (error) {
-    console.error('[Server Action] Error sending handle to webhook:', error);
-    return { success: false, error: 'Failed to send data.' };
-  }
-}
-
 /**
  * Fetches new reply suggestions for a given post ID from the n8n workflow.
  * @param postId The ID of the post to get suggestions for.
