@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,6 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn, formatNumber } from '@/lib/utils';
 import { format, formatDistanceToNowStrict } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import UserProfileCard from './user-profile-card';
 
 type JobCardProps = {
   job: Job;
@@ -44,10 +45,6 @@ const JobPreviewCard = ({ job }: { job: Job }) => {
 
 export default function JobCard({ job }: JobCardProps) {
   const {
-    authorName,
-    authorUserName,
-    authorProfilePicture,
-    authorIsBlueVerified,
     text,
     replyCount,
     retweetCount,
@@ -55,11 +52,22 @@ export default function JobCard({ job }: JobCardProps) {
     bookmarkCount,
     viewCount,
     applied_status,
-    canDm,
     createdAt,
+    userData,
   } = job;
 
+  const {
+    name: authorName,
+    url: authorUrl,
+    profilePicture: authorProfilePicture,
+    isBlueVerified: authorIsBlueVerified,
+    canDm,
+  } = userData;
+
   const [timeAgo, setTimeAgo] = useState('');
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  
+  const authorUserName = authorUrl.split('/').pop() || '';
 
   useEffect(() => {
     if (createdAt) {
@@ -83,54 +91,81 @@ export default function JobCard({ job }: JobCardProps) {
   ];
 
   return (
-    <article className="flex flex-col p-4 border-b border-border">
-      <div className="flex gap-4">
-        <Avatar className="w-12 h-12">
-          <AvatarImage src={authorProfilePicture} alt={`${authorName}'s avatar`} />
-          <AvatarFallback>{authorName ? authorName.charAt(0) : '?'}</AvatarFallback>
-        </Avatar>
-        <div className="flex-1">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center flex-wrap gap-1 text-sm">
-              <span className="font-bold hover:underline">{authorName}</span>
-              {authorIsBlueVerified && <BadgeCheck className="h-4 w-4 text-primary" />}
-              <span className="text-muted-foreground ml-1">@{authorUserName}</span>
-              <span className="text-muted-foreground">·</span>
-              <span className="text-muted-foreground hover:underline">{timeAgo}</span>
+    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+      <article className="flex flex-col p-4 border-b border-border">
+        <div className="flex gap-4">
+           <PopoverTrigger asChild>
+            <div 
+              onMouseEnter={() => setIsPopoverOpen(true)}
+              onMouseLeave={() => setIsPopoverOpen(false)}
+            >
+              <a href={authorUrl} target="_blank" rel="noopener noreferrer" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                <Avatar className="w-12 h-12">
+                  <AvatarImage src={authorProfilePicture} alt={`${authorName}'s avatar`} />
+                  <AvatarFallback>{authorName ? authorName.charAt(0) : '?'}</AvatarFallback>
+                </Avatar>
+              </a>
             </div>
-             <Button variant="ghost" size="icon" className="text-muted-foreground -mt-2">
-                <MoreHorizontal size={20} />
-            </Button>
-          </div>
-
-          <p className="text-base whitespace-pre-wrap mb-3">{text}</p>
-          
-          <JobPreviewCard job={job} />
-
-          <div className="flex justify-between items-center mt-4">
-            <div className="flex items-center gap-8 text-muted-foreground">
-                {actionItems.map((item, index) => (
-                    <div key={index} className={`flex items-center gap-2 text-sm transition-colors duration-200 ${item.color}`}>
-                        <item.icon size={18} />
-                        {item.value > 0 && <span>{formatNumber(item.value)}</span>}
-                    </div>
-                ))}
-            </div>
-            {canDm && (
-              <Button 
-                size="sm" 
-                className={cn(
-                  'rounded-full font-bold px-5',
-                  applied_status === 'APPLIED' && 'bg-green-500 hover:bg-green-600'
-                )}
-                disabled={applied_status === 'APPLIED'}
-              >
-                {applied_status === 'APPLIED' ? 'Applied' : 'DM'}
+          </PopoverTrigger>
+          <div className="flex-1">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center flex-wrap gap-1 text-sm">
+                <PopoverTrigger asChild>
+                  <div
+                    onMouseEnter={() => setIsPopoverOpen(true)}
+                    onMouseLeave={() => setIsPopoverOpen(false)}
+                   >
+                     <a href={authorUrl} target="_blank" rel="noopener noreferrer" className="font-bold hover:underline cursor-pointer" onClick={(e) => e.stopPropagation()}>{authorName}</a>
+                   </div>
+                </PopoverTrigger>
+                {authorIsBlueVerified && <BadgeCheck className="h-4 w-4 text-primary" />}
+                <span className="text-muted-foreground ml-1">@{authorUserName}</span>
+                <span className="text-muted-foreground">·</span>
+                <span className="text-muted-foreground hover:underline">{timeAgo}</span>
+              </div>
+               <Button variant="ghost" size="icon" className="text-muted-foreground -mt-2">
+                  <MoreHorizontal size={20} />
               </Button>
-            )}
+            </div>
+
+            <p className="text-base whitespace-pre-wrap mb-3">{text}</p>
+            
+            <JobPreviewCard job={job} />
+
+            <div className="flex justify-between items-center mt-4">
+              <div className="flex items-center gap-8 text-muted-foreground">
+                  {actionItems.map((item, index) => (
+                      <div key={index} className={`flex items-center gap-2 text-sm transition-colors duration-200 ${item.color}`}>
+                          <item.icon size={18} />
+                          {item.value > 0 && <span>{formatNumber(item.value)}</span>}
+                      </div>
+                  ))}
+              </div>
+              {canDm && (
+                <Button 
+                  size="sm" 
+                  className={cn(
+                    'rounded-full font-bold px-5',
+                    applied_status === 'APPLIED' && 'bg-green-500 hover:bg-green-600'
+                  )}
+                  disabled={applied_status === 'APPLIED'}
+                >
+                  {applied_status === 'APPLIED' ? 'Applied' : 'DM'}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </article>
+        <PopoverContent
+          side="top"
+          align="start"
+          onMouseEnter={() => setIsPopoverOpen(true)}
+          onMouseLeave={() => setIsPopoverOpen(false)}
+          className="w-80 p-0 border-none rounded-2xl shadow-xl"
+        >
+          <UserProfileCard user={userData} />
+        </PopoverContent>
+      </article>
+    </Popover>
   );
 }

@@ -1,13 +1,4 @@
 
-
-
-
-
-
-
-
-
-
 export type Author = {
   name: string;
   userName: string;
@@ -88,6 +79,24 @@ export type Tweet = {
   VideoPresent?: boolean
 };
 
+export type JobUserData = {
+  id: number;
+  url: string;
+  name: string;
+  description: string;
+  isBlueVerified: boolean;
+  profilePicture: string;
+  coverPicture: string;
+  location: string;
+  followers: number;
+  following: number;
+  canDm: boolean;
+  createdAt: string;
+  statusesCount: number;
+  display_url: string;
+  expanded_url: string;
+};
+
 export type Job = {
   row_number?: number;
   id: string;
@@ -101,13 +110,7 @@ export type Job = {
   bookmarkCount: number;
   createdAt: string;
   isReply: boolean;
-  canDm?: boolean;
   conversationId: string;
-  authorUserName: string;
-  authorId: string;
-  authorName: string;
-  authorIsBlueVerified?: boolean;
-  authorProfilePicture: string;
   images: string;
   VideoUrl?: string;
   VideoPresent?: boolean;
@@ -118,6 +121,7 @@ export type Job = {
   card_found?: boolean;
   card_title?: string;
   card_url?: string;
+  userData: JobUserData;
 };
 
 export type TelegramJob = {
@@ -139,7 +143,6 @@ export type ReplySuggestion = {
     content: string[];
 };
 
-
 export type UserProfile = {
   id: number;
   name: string;
@@ -148,4 +151,3 @@ export type UserProfile = {
   countryFlag?: string;
 };
  
-
