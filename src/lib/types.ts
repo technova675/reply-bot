@@ -151,3 +151,21 @@ export type UserProfile = {
   countryFlag?: string;
 };
  
+export type Founder = {
+  row_number: number;
+  id: number | string;
+  url: string;
+  name: string;
+  description: string;
+  isBlueVerified: boolean;
+  profilePicture: string;
+  coverPicture: string;
+  location: string;
+  followers: number;
+  following: number;
+  canDm: boolean;
+  createdAt: string;
+  statusesCount: number;
+  display_url: string;
+  expanded_url: string;
+};

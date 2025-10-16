@@ -49,6 +49,7 @@ export default function AuthedLayout({ children }: { children: React.ReactNode }
   const getPageTitle = (path: string) => {
     if (path.startsWith('/jobs')) return 'Jobs';
     if (path.startsWith('/telejobs')) return 'Telegram Jobs';
+    if (path.startsWith('/founders')) return 'Founders';
     if (path.startsWith('/feed')) return 'Home';
     if (path.startsWith('/post')) return 'Post';
     return 'Home';
@@ -57,7 +58,7 @@ export default function AuthedLayout({ children }: { children: React.ReactNode }
   const pageTitle = getPageTitle(pathname);
 
   // Certain pages have their own TopBar implementation to handle complex state like filtering
-  const showGenericTopBar = !pathname.startsWith('/post') && !pathname.startsWith('/feed') && !pathname.startsWith('/jobs');
+  const showGenericTopBar = !pathname.startsWith('/post') && !pathname.startsWith('/feed') && !pathname.startsWith('/jobs') && !pathname.startsWith('/founders');
 
   return (
     <div className="bg-background text-foreground">

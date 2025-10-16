@@ -1,7 +1,7 @@
 
 'use server';
 
-import type { ReplySuggestion } from './types';
+import type { Founder, ReplySuggestion } from './types';
 
 // This is a placeholder for a server action.
 // In a real application, this would interact with a database.
@@ -49,6 +49,26 @@ export async function getSuggestions(postId: string, userName: string): Promise<
     return []; 
   } catch (error) {
     console.error('An error occurred while fetching suggestions:', error);
+    return [];
+  }
+}
+
+
+/**
+ * Fetches the list of founders from the n8n workflow.
+ */
+export async function getFounders(): Promise<Founder[]> {
+  const url = 'https://krishnavir.app.n8n.cloud/webhook/ee020da8-fa8b-4661-b9f6-ad6b1720db4c';
+  try {
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) {
+      console.error('Failed to fetch founders from n8n workflow. Status:', response.status);
+      return [];
+    }
+    const data = await response.json();
+    return data as Founder[];
+  } catch (error) {
+    console.error('An error occurred while fetching founders:', error);
     return [];
   }
 }

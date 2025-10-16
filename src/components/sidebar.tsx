@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   Home,
   Briefcase,
+  Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserProfile as UserProfileType } from '@/lib/types';
@@ -78,11 +79,12 @@ export default function Sidebar({ users, selectedUser, setSelectedUser, pageTitl
   ];
 
   const jobsNavItem = { href: '/jobs', icon: Briefcase, text: 'Jobs' };
+  const foundersNavItem = { href: '/founders', icon: Users, text: 'Founders' };
   const telejobsNavItem = { href: '/telejobs', icon: TelegramIcon, text: 'Telegram Jobs' };
 
   const navItems =
     selectedUser?.name.toLowerCase() === 'sim'
-      ? [...baseNavItems, jobsNavItem, telejobsNavItem]
+      ? [...baseNavItems, jobsNavItem, foundersNavItem, telejobsNavItem]
       : baseNavItems;
 
 
