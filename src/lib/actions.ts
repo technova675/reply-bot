@@ -58,7 +58,7 @@ export async function getSuggestions(postId: string, userName: string): Promise<
  * Fetches the list of founders from the n8n workflow.
  */
 export async function getFounders(): Promise<Founder[]> {
-  const url = 'https://krishnavir.app.n8n.cloud/webhook/ee020da8-fa8b-4661-b9f6-ad6b1720db4c';
+  const url = 'https://krishnavir.app.n8n.cloud/webhook/400c2b32-fb68-4d27-af87-6764ceae421f';
   try {
     const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) {
