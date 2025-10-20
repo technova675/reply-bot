@@ -6,7 +6,6 @@ import { getJobs } from '@/lib/data';
 import type { Job } from '@/lib/types';
 import JobCard from '@/components/job-card';
 import { Loader2 } from 'lucide-react';
-import TopBar from '@/components/top-bar';
 import { format } from 'date-fns';
 
 export type JobFilterType = 'All' | 'DM Done' | 'Yet To DM';
@@ -15,10 +14,9 @@ type GroupedJobs = {
   [date: string]: Job[];
 };
 
-export default function JobsPage() {
+export default function JobsPage({ activeFilter }: { activeFilter: JobFilterType }) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<JobFilterType>('All');
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -70,21 +68,8 @@ export default function JobsPage() {
     );
   }
 
-  const filterTabs = [
-    { value: 'All', label: 'All' },
-    { value: 'DM Done', label: 'DM Done' },
-    { value: 'Yet To DM', label: 'Yet To DM' },
-  ];
-
   return (
     <div>
-        <TopBar
-            pageTitle="Jobs"
-            activeFilter={activeFilter}
-            onFilterChange={(filter) => setActiveFilter(filter as JobFilterType)}
-            showFilters={true}
-            filterTabs={filterTabs}
-        />
       {sortedDates.length > 0 ? (
         sortedDates.map(date => (
           <div key={date}>

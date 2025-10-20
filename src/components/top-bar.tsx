@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +11,9 @@ type TopBarProps = {
   onFilterChange?: (filter: string) => void;
   showFilters?: boolean;
   filterTabs?: FilterTab[];
+  children?: React.ReactNode;
+  onMenuClick?: () => void;
+  mobileSidebar?: React.ReactNode;
 };
 
 const defaultFilterTabs: FilterTab[] = [
@@ -24,16 +28,21 @@ export default function TopBar({
   onFilterChange,
   showFilters = false,
   filterTabs = defaultFilterTabs,
+  children,
+  mobileSidebar,
 }: TopBarProps) {
   return (
     <header className="sticky top-0 z-10 flex flex-col bg-background/80 backdrop-blur-sm border-b border-border">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-4">
+          {mobileSidebar}
           <h1 className="text-xl font-bold font-headline">{pageTitle}</h1>
         </div>
       </div>
 
-      {showFilters && (
+      {children}
+
+      {showFilters && onFilterChange && (
         <div className="px-4 pb-3">
           <Tabs
             value={activeFilter}

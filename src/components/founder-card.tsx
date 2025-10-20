@@ -4,15 +4,16 @@
 import type { Founder } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { BadgeCheck } from 'lucide-react';
+import { BadgeCheck, Check } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 type FounderCardProps = {
   founder: Founder;
 };
 
 const FounderCard = ({ founder }: FounderCardProps) => {
-  const { name, url, profilePicture, description, isBlueVerified, canDm } = founder;
+  const { name, url, profilePicture, description, isBlueVerified, canDm, dm_status } = founder;
   const handle = url.split('/').pop() || '';
 
   // Function to parse the bio and turn @mentions and links into clickable links
@@ -58,8 +59,21 @@ const FounderCard = ({ founder }: FounderCardProps) => {
             <p className="text-muted-foreground text-sm">@{handle}</p>
           </div>
            {canDm && (
-            <Button variant="outline" size="sm" className="rounded-full font-bold px-4">
-              DM
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={cn(
+                "rounded-full font-bold px-4",
+                dm_status && "bg-green-500/10 text-green-500 border-green-500/20"
+              )}
+              disabled={dm_status}
+            >
+              {dm_status ? (
+                <>
+                  <Check className="mr-2 h-4 w-4" />
+                  DM Sent
+                </>
+              ) : "DM"}
             </Button>
           )}
         </div>

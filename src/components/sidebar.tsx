@@ -6,11 +6,13 @@ import {
   Home,
   Briefcase,
   Users,
+  PanelLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserProfile as UserProfileType } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 
 const XLogo = () => (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="w-7 h-7 fill-current">
@@ -31,19 +33,19 @@ const TelegramIcon = () => (
   </svg>
 );
 
-
-const NavItem = ({ href, icon: Icon, text, active = false }: { href: string, icon: React.ElementType, text: string, active?: boolean }) => (
-    <Link href={href} passHref>
+const NavItem = ({ href, icon: Icon, text, active = false, isMobile = false, onClick }: { href: string, icon: React.ElementType, text: string, active?: boolean, isMobile?: boolean, onClick?: () => void }) => (
+    <Link href={href} passHref onClick={onClick}>
       <Button
         variant="ghost"
         className={cn(
-            "flex justify-start items-center gap-4 text-xl w-auto rounded-full px-4 py-3 h-auto",
-            active ? 'font-bold' : 'font-normal'
+            "flex justify-start items-center gap-4 text-xl w-full rounded-full px-4 py-3 h-auto",
+            active ? 'font-bold' : 'font-normal',
+            isMobile && 'w-full'
         )}
         aria-label={text}
       >
         <Icon size={26} strokeWidth={active ? 2.5 : 2} />
-        <span>{text}</span>
+        <span className={cn(isMobile ? 'block' : 'hidden lg:block')}>{text}</span>
       </Button>
     </Link>
 );
@@ -72,8 +74,21 @@ const UserProfileDisplay = ({ selectedUser }: { selectedUser: UserProfileType | 
   );
 };
 
-
-export default function Sidebar({ users, selectedUser, setSelectedUser, pageTitle }: { users: UserProfileType[], selectedUser: UserProfileType | null, setSelectedUser: (user: UserProfileType) => void, pageTitle: string }) {
+export default function Sidebar({ 
+    users, 
+    selectedUser, 
+    setSelectedUser, 
+    pageTitle,
+    isMobile = false,
+    onNavItemClick 
+}: { 
+    users: UserProfileType[], 
+    selectedUser: UserProfileType | null, 
+    setSelectedUser: (user: UserProfileType) => void, 
+    pageTitle: string,
+    isMobile?: boolean,
+    onNavItemClick?: () => void
+}) {
   const baseNavItems = [
     { href: '/feed', icon: Home, text: 'Home' },
   ];
@@ -87,9 +102,8 @@ export default function Sidebar({ users, selectedUser, setSelectedUser, pageTitl
       ? [...baseNavItems, jobsNavItem, foundersNavItem, telejobsNavItem]
       : baseNavItems;
 
-
-  return (
-    <header className="hidden sm:flex flex-col justify-between h-screen p-2 sticky top-0 w-64 items-start">
+  const sidebarContent = (
+    <div className="flex flex-col justify-between h-full p-2 items-start w-full">
       <div className="flex flex-col items-start gap-2 w-full">
          <div className="p-3">
            <XLogo />
@@ -100,6 +114,8 @@ export default function Sidebar({ users, selectedUser, setSelectedUser, pageTitl
                 key={item.text} 
                 {...item} 
                 active={pageTitle === item.text} 
+                isMobile={isMobile}
+                onClick={onNavItemClick}
              />
             ))}
          </nav>
@@ -110,6 +126,16 @@ export default function Sidebar({ users, selectedUser, setSelectedUser, pageTitl
            <UserProfileDisplay selectedUser={selectedUser} />
         )}
       </div>
+    </div>
+  );
+
+  if (isMobile) {
+    return sidebarContent;
+  }
+
+  return (
+    <header className="hidden sm:flex flex-col justify-between h-screen p-2 sticky top-0 w-24 lg:w-64 items-start transition-all duration-300">
+      {sidebarContent}
     </header>
   );
 }

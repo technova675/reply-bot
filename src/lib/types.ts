@@ -1,4 +1,5 @@
 
+
 export type Author = {
   name: string;
   userName: string;
@@ -50,12 +51,12 @@ export type Tweet = {
   viewCount: number;
   bookmarkCount: number;
   isReplied?: boolean;
-  replyList?: Reply[]; 
+  replyList?: Reply[];
   suggestions?: string[];
   isQuote?: boolean;
   isRetweeted?: boolean;
-  quoteData?: any[]; 
-  
+  quoteData?: any[];
+
   // Flattened author properties
   authorName: string;
   authorUserName: string;
@@ -140,7 +141,7 @@ export type TelegramJob = {
 
 
 export type ReplySuggestion = {
-    content: string[];
+  content: string[];
 };
 
 export type UserProfile = {
@@ -150,7 +151,7 @@ export type UserProfile = {
   avatar: string;
   countryFlag?: string;
 };
- 
+
 export type Founder = {
   row_number: number;
   id: number | string;
@@ -168,4 +169,7 @@ export type Founder = {
   statusesCount: number;
   display_url: string;
   expanded_url: string;
+  dm_status: boolean;
+  userName: string;
 };
+

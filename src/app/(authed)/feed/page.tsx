@@ -9,7 +9,6 @@ import DebugDrawer from '@/components/debug-drawer';
 import { Loader2 } from 'lucide-react';
 import { setCachedTweets, getCachedTweets } from '@/lib/tweet-cache';
 import { useAuth } from '@/hooks/use-auth';
-import TopBar from '@/components/top-bar';
 import { format } from 'date-fns';
 
 type FilterType = 'All' | 'Replied' | 'Yet to Reply';
@@ -18,11 +17,10 @@ type GroupedTweets = {
   [date: string]: Tweet[];
 };
 
-export default function FeedPage() {
+export default function FeedPage({ activeFilter }: { activeFilter: FilterType }) {
   const { loggedInUser, isLoading: isAuthLoading } = useAuth();
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<FilterType>('All');
 
   useEffect(() => {
     const initialize = async () => {
@@ -122,18 +120,8 @@ export default function FeedPage() {
     );
   }
 
-  const showTopBar = true; // Feed page always has a TopBar with filters
-
   return (
     <>
-       {showTopBar && (
-          <TopBar 
-              pageTitle="Home" 
-              activeFilter={activeFilter}
-              onFilterChange={(filter) => setActiveFilter(filter as FilterType)}
-              showFilters={true}
-          />
-        )}
       {isLoading ? (
         <div className="flex justify-center items-center h-[calc(100vh-180px)]">
           <Loader2 className="animate-spin text-muted-foreground" size={24} />
