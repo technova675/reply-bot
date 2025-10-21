@@ -60,7 +60,7 @@ export async function getSuggestions(postId: string, userName: string): Promise<
 export async function getFounders(): Promise<Founder[]> {
   const url = 'https://krishnavir.app.n8n.cloud/webhook/400c2b32-fb68-4d27-af87-6764ceae421f';
   try {
-    const response = await fetch(url, { cache: 'no-store' });
+    const response = await fetch(url, { next: { revalidate: 3600 } }); // Revalidate every hour
     if (!response.ok) {
       console.error('Failed to fetch founders from n8n workflow. Status:', response.status);
       return [];
