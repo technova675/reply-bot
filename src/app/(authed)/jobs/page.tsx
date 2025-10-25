@@ -77,7 +77,9 @@ export default function JobsPage() {
 
     setUpdatingJob({ id: jobId, action: 'dm' });
     try {
-      const result = await sendJobDM(jobId, dmText, jobToUpdate.userData.id, jobToUpdate.userData.name);
+      // const result = await sendJobDM(jobId, dmText, jobToUpdate.userData.id, jobToUpdate.userData.name);
+       const userName = jobToUpdate.userData.url.split('/').pop() || '';
+      const result = await sendJobDM(jobId, dmText, jobToUpdate.userData.id, userName);
       if (result.success) {
         setJobs(currentJobs => 
           currentJobs.map(job => 

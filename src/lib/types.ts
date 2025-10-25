@@ -84,6 +84,7 @@ export type JobUserData = {
   name: string;
   description: string;
   isBlueVerified: boolean;
+  userName?: string;
   profilePicture: string;
   coverPicture: string;
   location: string;
