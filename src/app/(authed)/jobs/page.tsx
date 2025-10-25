@@ -10,6 +10,7 @@ import TopBar from '@/components/top-bar';
 import { markJobAsNotInterested, sendJobDM } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
+import { format } from 'date-fns';
 
 export type JobFilterType = 'All' | 'DM Done' | 'Yet To DM';
 
@@ -17,6 +18,10 @@ type UpdatingState = {
   id: string;
   action: 'dm' | 'not-interested';
 } | null;
+
+type GroupedJobs = {
+  [date: string]: Job[];
+};
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -109,6 +114,23 @@ export default function JobsPage() {
     return jobs;
   }, [jobs, activeFilter]);
 
+  const groupedJobs = useMemo(() => {
+    return filteredJobs.reduce((acc: GroupedJobs, job) => {
+      if (!job.createdAt) return acc;
+      const jobDate = new Date(job.createdAt);
+      const formattedDate = format(jobDate, 'MMMM d, yyyy');
+      if (!acc[formattedDate]) {
+        acc[formattedDate] = [];
+      }
+      acc[formattedDate].push(job);
+      return acc;
+    }, {});
+  }, [filteredJobs]);
+
+  const sortedDates = useMemo(() => {
+    return Object.keys(groupedJobs).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  }, [groupedJobs]);
+
   const pageTitle = jobs.length > 0 ? `Jobs (${jobs.length})` : 'Jobs';
 
   return (
@@ -131,16 +153,23 @@ export default function JobsPage() {
         </div>
       ) : (
         <div>
-          {filteredJobs.length > 0 ? (
-            filteredJobs.map(job => (
-              <JobCard 
-                key={job.id} 
-                job={job} 
-                onNotInterested={handleNotInterested}
-                onSendDM={handleSendDM}
-                isMarkingNotInterested={updatingJob?.id === job.id && updatingJob?.action === 'not-interested'}
-                isSendingDM={updatingJob?.id === job.id && updatingJob?.action === 'dm'}
-              />
+          {sortedDates.length > 0 ? (
+            sortedDates.map(date => (
+              <div key={date}>
+                <div className="sticky top-[125px] z-10 bg-background/80 backdrop-blur-sm p-4 border-b border-t border-border">
+                  <h2 className="font-bold text-lg">{date} <span className="text-muted-foreground font-normal text-base">({groupedJobs[date].length} jobs)</span></h2>
+                </div>
+                {groupedJobs[date].map(job => (
+                  <JobCard 
+                    key={job.id} 
+                    job={job} 
+                    onNotInterested={handleNotInterested}
+                    onSendDM={handleSendDM}
+                    isMarkingNotInterested={updatingJob?.id === job.id && updatingJob?.action === 'not-interested'}
+                    isSendingDM={updatingJob?.id === job.id && updatingJob?.action === 'dm'}
+                  />
+                ))}
+              </div>
             ))
           ) : (
             <div className="text-center p-8 text-muted-foreground">

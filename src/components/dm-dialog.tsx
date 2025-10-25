@@ -24,7 +24,7 @@ type DmDialogProps = {
 };
 
 export default function DmDialog({ job, onSendDM, isSending, onDmSent }: DmDialogProps) {
-  const [dmText, setDmText] = useState('');
+   const [dmText, setDmText] = useState(`Hey ${job.userData.name},\n\n`);
   const { toast } = useToast();
 
   const handleSend = async () => {
