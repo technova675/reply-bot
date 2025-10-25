@@ -1,5 +1,3 @@
-
-
 export type Author = {
   name: string;
   userName: string;
@@ -51,12 +49,12 @@ export type Tweet = {
   viewCount: number;
   bookmarkCount: number;
   isReplied?: boolean;
-  replyList?: Reply[];
+  replyList?: Reply[]; 
   suggestions?: string[];
   isQuote?: boolean;
   isRetweeted?: boolean;
-  quoteData?: any[];
-
+  quoteData?: any[]; 
+  
   // Flattened author properties
   authorName: string;
   authorUserName: string;
@@ -81,7 +79,7 @@ export type Tweet = {
 };
 
 export type JobUserData = {
-  id: number;
+  id: number | string;
   url: string;
   name: string;
   description: string;
@@ -112,16 +110,19 @@ export type Job = {
   createdAt: string;
   isReply: boolean;
   conversationId: string;
+  authorId?: string;
   images: string;
   VideoUrl?: string;
   VideoPresent?: boolean;
-  applied_status: 'PENDING' | 'APPLIED';
+  applied_status: string;
   card_image?: string;
   card_description?: string;
   card_domain?: string;
   card_found?: boolean;
   card_title?: string;
   card_url?: string;
+  Intrested?: string;
+  dm_status: boolean;
   userData: JobUserData;
 };
 
@@ -136,12 +137,12 @@ export type TelegramJob = {
   Apply_link: string;
   Application_Deadline?: string;
   display_url?: string;
-  sender_id: number;
+sender_id: number;
 };
 
 
 export type ReplySuggestion = {
-  content: string[];
+    content: string[];
 };
 
 export type UserProfile = {
@@ -172,4 +173,3 @@ export type Founder = {
   dm_status: boolean;
   userName: string;
 };
-

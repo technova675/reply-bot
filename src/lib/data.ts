@@ -1,5 +1,5 @@
 
-import type { Reply, Tweet, UserProfile, Job, TelegramJob } from './types';
+import type { Reply, Tweet, UserProfile, Job, TelegramJob, Founder } from './types';
 
 const TWEET_LIST_URL = 'https://krishnavir.app.n8n.cloud/webhook/0a587209-3bfa-4bfb-aa41-6187541931d4';
 const TWEET_REPLY_URL = "https://krishnavir.app.n8n.cloud/webhook/ff70f5fb-a2cb-4103-814e-314a515c4d88";
@@ -36,7 +36,9 @@ export async function getTweets(name?: string): Promise<Tweet[]> {
  */
 export async function getJobs(): Promise<Job[]> {
   try {
-    const response = await fetch(JOBS_LIST_URL, { cache: 'no-store' });
+    const url = new URL(JOBS_LIST_URL);
+    url.searchParams.append('updateStatus', 'false');
+    const response = await fetch(url.toString(), { cache: 'no-store' });
     if (!response.ok) {
       console.error('Failed to fetch jobs from n8n workflow. Status:', response.status);
       return [];
@@ -113,6 +115,7 @@ export async function getTweetRepliesById(id: string, userName?: string): Promis
     return undefined;
   }
 }
+
 
 /**
 //  * Fetches quotes from the n8n workflow.

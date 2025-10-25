@@ -3,17 +3,24 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { BadgeCheck, Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat2, BarChart2 } from 'lucide-react';
+import { BadgeCheck, Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat2, BarChart2, X, Loader2, Send } from 'lucide-react';
 import type { Job } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn, formatNumber } from '@/lib/utils';
-import { format, formatDistanceToNowStrict } from 'date-fns';
+import { formatDistanceToNowStrict } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import UserProfileCard from './user-profile-card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import DmDialog from './dm-dialog';
 
 type JobCardProps = {
   job: Job;
+  onNotInterested: (jobId: string) => void;
+  onSendDM: (jobId: string, dmText: string) => Promise<boolean | void>;
+  isMarkingNotInterested?: boolean;
+  isSendingDM?: boolean;
 };
 
 const JobPreviewCard = ({ job }: { job: Job }) => {
@@ -43,15 +50,16 @@ const JobPreviewCard = ({ job }: { job: Job }) => {
 };
 
 
-export default function JobCard({ job }: JobCardProps) {
+export default function JobCard({ job, onNotInterested, onSendDM, isMarkingNotInterested, isSendingDM }: JobCardProps) {
   const {
+    id,
     text,
     replyCount,
     retweetCount,
     likeCount,
     bookmarkCount,
     viewCount,
-    applied_status,
+    dm_status,
     createdAt,
     userData,
   } = job;
@@ -66,6 +74,7 @@ export default function JobCard({ job }: JobCardProps) {
 
   const [timeAgo, setTimeAgo] = useState('');
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isDmDialogOpen, setIsDmDialogOpen] = useState(false);
   
   const authorUserName = authorUrl.split('/').pop() || '';
 
@@ -89,6 +98,14 @@ export default function JobCard({ job }: JobCardProps) {
     { icon: BarChart2, value: viewCount, color: 'hover:text-primary' },
     { icon: Bookmark, value: bookmarkCount, color: 'hover:text-primary' },
   ];
+  
+  const isApplied = dm_status === true;
+
+  const handleDmSent = () => {
+    setIsDmDialogOpen(false);
+  }
+
+  const isUpdating = isMarkingNotInterested || isSendingDM;
 
   return (
     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -141,18 +158,49 @@ export default function JobCard({ job }: JobCardProps) {
                       </div>
                   ))}
               </div>
-              {canDm && (
-                <Button 
-                  size="sm" 
-                  className={cn(
-                    'rounded-full font-bold px-5',
-                    applied_status === 'APPLIED' && 'bg-green-500 hover:bg-green-600'
+              <div className="flex items-center gap-2">
+                 <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="outline" size="icon" onClick={() => onNotInterested(id)} disabled={isUpdating}>
+                                {isMarkingNotInterested ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Not Interested</p>
+                        </TooltipContent>
+                    </Tooltip>
+                 </TooltipProvider>
+                  {canDm && (
+                     <Dialog open={isDmDialogOpen} onOpenChange={setIsDmDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          className={cn(
+                            'rounded-full font-bold px-5 w-[100px]',
+                            isApplied && 'bg-green-500 hover:bg-green-600'
+                          )}
+                          disabled={isUpdating || isApplied}
+                        >
+                          {isSendingDM ? <Loader2 className="h-4 w-4 animate-spin" /> : 
+                          isApplied ? 'Applied' : (
+                            <>
+                              <Send className="mr-2 h-4 w-4"/>
+                              DM
+                            </>
+                          )
+                          }
+                        </Button>
+                      </DialogTrigger>
+                       <DmDialog 
+                        job={job} 
+                        onSendDM={onSendDM} 
+                        isSending={!!isSendingDM}
+                        onDmSent={handleDmSent}
+                      />
+                    </Dialog>
                   )}
-                  disabled={applied_status === 'APPLIED'}
-                >
-                  {applied_status === 'APPLIED' ? 'Applied' : 'DM'}
-                </Button>
-              )}
+              </div>
             </div>
           </div>
         </div>

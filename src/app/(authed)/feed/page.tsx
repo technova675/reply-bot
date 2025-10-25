@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { setCachedTweets, getCachedTweets } from '@/lib/tweet-cache';
 import { useAuth } from '@/hooks/use-auth';
 import { format } from 'date-fns';
+import TopBar from '@/components/top-bar';
 
 type FilterType = 'All' | 'Replied' | 'Yet to Reply';
 
@@ -17,10 +18,11 @@ type GroupedTweets = {
   [date: string]: Tweet[];
 };
 
-export default function FeedPage({ activeFilter }: { activeFilter: FilterType }) {
+export default function FeedPage() {
   const { loggedInUser, isLoading: isAuthLoading } = useAuth();
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeFilter, setFeedActiveFilter] = useState<FilterType>('All');
 
   useEffect(() => {
     const initialize = async () => {
@@ -120,27 +122,37 @@ export default function FeedPage({ activeFilter }: { activeFilter: FilterType })
     );
   }
 
+  const pageTitle = tweets.length > 0 ? `Home (${tweets.length})` : 'Home';
+
   return (
     <>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-[calc(100vh-180px)]">
-          <Loader2 className="animate-spin text-muted-foreground" size={24} />
-          <p className="ml-2">Loading...</p>
-        </div>
-      ) : sortedDates.length > 0 ? (
-        sortedDates.map(date => (
-          <div key={date}>
-            <div className="sticky top-[109px] z-10 bg-background/80 backdrop-blur-sm p-4 border-b border-t border-border">
-              <h2 className="font-bold text-lg">{date} <span className="text-muted-foreground font-normal text-base">({groupedTweets[date].length} posts)</span></h2>
-            </div>
-            <Feed tweets={groupedTweets[date]} />
+      <TopBar
+        pageTitle={pageTitle}
+        activeFilter={activeFilter}
+        onFilterChange={(filter) => setFeedActiveFilter(filter as FilterType)}
+        showFilters={true}
+      />
+      <div className="flex-1">
+        {isLoading ? (
+          <div className="flex justify-center items-center h-[calc(100vh-180px)]">
+            <Loader2 className="animate-spin text-muted-foreground" size={24} />
+            <p className="ml-2">Loading...</p>
           </div>
-        ))
-      ) : (
-        <div className="text-center p-8 text-muted-foreground">
-          No posts found for this filter.
-        </div>
-      )}
+        ) : sortedDates.length > 0 ? (
+          sortedDates.map(date => (
+            <div key={date}>
+              <div className="sticky top-[109px] z-10 bg-background/80 backdrop-blur-sm p-4 border-b border-t border-border">
+                <h2 className="font-bold text-lg">{date} <span className="text-muted-foreground font-normal text-base">({groupedTweets[date].length} posts)</span></h2>
+              </div>
+              <Feed tweets={groupedTweets[date]} />
+            </div>
+          ))
+        ) : (
+          <div className="text-center p-8 text-muted-foreground">
+            No posts found for this filter.
+          </div>
+        )}
+      </div>
       <DebugDrawer data={tweets} />
     </>
   );

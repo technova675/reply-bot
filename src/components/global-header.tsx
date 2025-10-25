@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 
 
 const ChirpIcon = () => (
@@ -17,6 +18,7 @@ const ChirpIcon = () => (
 
 export default function GlobalHeader() {
   const router = useRouter();
+  const { loggedInUser } = useAuth();
 
   const handleLogout = () => {
     sessionStorage.removeItem('loggedInUserHandle');
@@ -35,7 +37,9 @@ export default function GlobalHeader() {
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
-            <Button variant="outline" onClick={handleLogout}>Logout</Button>
+            {loggedInUser && (
+              <Button variant="outline" onClick={handleLogout}>Logout</Button>
+            )}
         </div>
       </div>
     </header>
