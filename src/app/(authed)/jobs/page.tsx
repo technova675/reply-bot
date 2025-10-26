@@ -77,8 +77,7 @@ export default function JobsPage() {
 
     setUpdatingJob({ id: jobId, action: 'dm' });
     try {
-      // const result = await sendJobDM(jobId, dmText, jobToUpdate.userData.id, jobToUpdate.userData.name);
-       const userName = jobToUpdate.userData.url.split('/').pop() || '';
+      const userName = jobToUpdate.userData.url.split('/').pop() || '';
       const result = await sendJobDM(jobId, dmText, jobToUpdate.userData.id, userName);
       if (result.success) {
         setJobs(currentJobs => 
@@ -135,6 +134,18 @@ export default function JobsPage() {
 
   const pageTitle = jobs.length > 0 ? `Jobs (${jobs.length})` : 'Jobs';
 
+  const filterTabs = useMemo(() => {
+    const allCount = jobs.length;
+    const dmDoneCount = jobs.filter(job => job.dm_status === true).length;
+    const yetToDmCount = jobs.filter(job => job.dm_status === false && job.userData.canDm === true).length;
+
+    return [
+      { value: 'All', label: `All (${allCount})` },
+      { value: 'DM Done', label: `DM Done (${dmDoneCount})` },
+      { value: 'Yet To DM', label: `Yet To DM (${yetToDmCount})` },
+    ];
+  }, [jobs]);
+
   return (
     <>
       <TopBar 
@@ -142,11 +153,7 @@ export default function JobsPage() {
         activeFilter={activeFilter}
         onFilterChange={(filter) => setJobActiveFilter(filter as JobFilterType)}
         showFilters={true}
-        filterTabs={[
-          { value: 'All', label: 'All' },
-          { value: 'DM Done', label: 'DM Done' },
-          { value: 'Yet To DM', label: 'Yet To DM' },
-        ]}
+        filterTabs={filterTabs}
       />
       {isLoading ? (
         <div className="flex justify-center items-center h-[calc(100vh-180px)]">
